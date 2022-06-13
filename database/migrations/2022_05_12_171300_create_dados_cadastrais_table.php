@@ -14,16 +14,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dados_cadastrais', function (Blueprint $table) {
-            $table->bigIncrements('cod_smart_unidade');
-            $table->text('cliente');
-            $table->text('unidade');
-            $table->text('codigo_scde');
-            $table->decimal('demanda_p');
-            $table->decimal('demanda_fp');
-            $table->text('status_empresa');
-            $table->text('status_unidade');
-            $table->decimal('data_de_migracao');
-            $table->bigInteger('cod_smart_cliente');
+            $table->bigInteger('cod_smart_unidade', false)->primary()->default(null);
+            $table->text('cliente')->nullable();
+            $table->text('unidade')->nullable();
+            $table->text('codigo_scde')->nullable();
+            $table->numeric('demanda_p')->nullable();
+            $table->numeric('demanda_fp')->nullable();
+            $table->text('status_empresa')->nullable();
+            $table->text('status_unidade')->nullable();
+            $table->numeric('data_de_migracao')->nullable();
+            $table->bigInteger('cod_smart_cliente')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

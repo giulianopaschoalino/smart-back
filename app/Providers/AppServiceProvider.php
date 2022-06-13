@@ -2,6 +2,16 @@
 
 namespace App\Providers;
 
+use App\Repositories\Economy\EconomyContractInterface;
+use App\Repositories\Economy\EconomyRepository;
+use App\Repositories\Faqs\FaqContractInterface;
+use App\Repositories\Faqs\FaqRepository;
+use App\Repositories\Notifications\NotificationContractInterface;
+use App\Repositories\Notifications\NotificationRepository;
+use App\Repositories\Pld\PldContractInterface;
+use App\Repositories\Pld\PldRepository;
+use App\Repositories\Users\UserContractInterface;
+use App\Repositories\Users\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,9 +21,28 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        //
+        $this->app->bind(
+            UserContractInterface::class,
+            UserRepository::class
+        );
+        $this->app->bind(
+            NotificationContractInterface::class,
+            NotificationRepository::class
+        );
+        $this->app->bind(
+            FaqContractInterface::class,
+            FaqRepository::class
+        );
+        $this->app->bind(
+            PldContractInterface::class,
+            PldRepository::class
+        );
+        $this->app->bind(
+            EconomyContractInterface::class,
+            EconomyRepository::class
+        );
     }
 
     /**

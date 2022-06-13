@@ -10,7 +10,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
-    public function login(LoginResquest $request)
+    public function login(LoginResquest $request): JsonResponse
     {
         $credentials = $request->only('email', 'password');
 
@@ -26,21 +26,6 @@ class AuthController extends Controller
             'token' => $token->plainTextToken,
             'user' => $user
         ], 200);
-
-    }
-
-    public function login2(LoginResquest $request): JsonResponse
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (!auth()->attempt($credentials))
-        {
-            abort(401, 'Inavalid Credentials');
-        }
-
-        $request->session()->regenerate();
-
-        return response()->json([], 200);
 
     }
 

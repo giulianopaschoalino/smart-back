@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('parametros', function (Blueprint $table) {
             $table->integerIncrements('codigo');
-            $table->string('argumento');
+            $table->string('argumento')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('pld', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->decimal('dia_num')->nullable();
-            $table->decimal('hora')->nullable();
+            $table->numeric('dia_num')->nullable();
+            $table->numeric('hora')->nullable();
             $table->text('submercado')->nullable();
-            $table->decimal('valor')->nullable();
+            $table->numeric('valor')->nullable();
             $table->string('mes_ref')->nullable();
-            $table->decimal('dia_da_semana')->nullable();
+            $table->numeric('dia_da_semana')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

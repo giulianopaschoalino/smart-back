@@ -16,6 +16,7 @@ class UserTableSeeder extends Seeder
     public function run(): void
     {
         User::query()->create([
+            'client_id'      => null,
             'name'           => 'Admin',
             'email'          => 'admin@admin.com',
             'password'       => bcrypt('password'),
@@ -23,6 +24,15 @@ class UserTableSeeder extends Seeder
         ]);
 
         User::query()->create([
+            'client_id'      => null,
+            'name'           => 'Admin',
+            'email'          => 'admin2@admin.com',
+            'password'       => bcrypt('password'),
+            'remember_token' => null,
+        ]);
+
+        User::query()->create([
+            'client_id'      => 180103211,
             'name'           => 'Client',
             'email'          => 'client@client.com',
             'password'       => bcrypt('password'),

@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('med_5min', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('origem');
-            $table->decimal('dia_num');
-            $table->integer('minuto');
-            $table->decimal('ativa_consumo');
-            $table->decimal('ativa_geracao');
-            $table->decimal('reativa_consumo');
-            $table->decimal('reativa_geracao');
-            $table->text('ponto');
+            $table->text('origem')->nullable();
+            $table->decimal('dia_num')->nullable();
+            $table->integer('minuto')->nullable();
+            $table->numeric('ativa_consumo')->nullable();
+            $table->numeric('ativa_geracao')->nullable();
+            $table->numeric('reativa_consumo')->nullable();
+            $table->numeric('reativa_geracao')->nullable();
+            $table->text('ponto')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

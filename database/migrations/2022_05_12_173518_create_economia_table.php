@@ -14,20 +14,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('economia', function (Blueprint $table) {
-            $table->bigIncrements('cod_econ');
-            $table->bigInteger('cod_smart_unidade');
-            $table->text('mes text');
-            $table->decimal('custo_cativo');
-            $table->decimal('custo_livre');
-            $table->decimal('economia_mensal');
-            $table->decimal('economia_acumulada');
-            $table->decimal('custo_unit');
-            $table->boolean('dad_estimado');
+
+            $table->bigInteger('cod_te')->unsigned();
+            $table->bigInteger('cod_smart_unidade')->unsigned();
+            $table->text('mes')->nullable()->default(null);
+            $table->numeric('custo_cativo')->nullable();
+            $table->numeric('custo_livre')->nullable();
+            $table->numeric('economia_mensal')->nullable();
+            $table->numeric('economia_acumulada')->nullable();
+            $table->numeric('custo_unit')->nullable();
+            $table->boolean('dad_estimado')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('cod_smart_unidade', 'economia_cod_smart_unidade_fkey')
-                ->references('cod_smart_unidade')->on('dados_cadastrais');
+                ->references('cod_smart_unidade')->on('dados_cadastrais')->onDelete('no action')->onUpdate('no action')->notValid();
+
+            $table->primary(['cod_te','cod_smart_unidade']);
         });
     }
 

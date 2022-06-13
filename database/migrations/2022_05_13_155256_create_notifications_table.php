@@ -15,10 +15,11 @@ return new class extends Migration
     {
         Schema::create('notificacoes', function (Blueprint $table) {
             $table->id();
-            $table->string('cliente_id');
-            $table->text('texto');
+            $table->string('title');
+            $table->text('body')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
         });
     }
 

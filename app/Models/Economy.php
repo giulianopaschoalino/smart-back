@@ -14,4 +14,5 @@ class Economy extends Model implements Auditing
     use HasFactory, SoftDeletes, Auditable;
 
     protected $table = 'economia';
+
 }
