@@ -21,7 +21,7 @@ Route::prefix('auth')->group(function (){
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
-    Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']);
+    Route::get('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']);
     Route::post('pld/list', [\App\Http\Controllers\PldController::class, 'listConsumption']);
     Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']);
     Route::post('pld/schedule', [\App\Http\Controllers\PldController::class, 'consumptionBySchedule']);

@@ -4,10 +4,7 @@ namespace App\Repositories\Economy;
 
 use App\Models\Economy;
 use App\Repositories\AbstractRepository;
-use App\Repository\Repository;
-use App\Support\FilterQueryBuilder;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
+use App\Support\FilterBuilder\FilterQueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 class EconomyRepository extends AbstractRepository implements EconomyContractInterface

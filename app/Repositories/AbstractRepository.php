@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Support\FilterBuilder\FiltersQuery;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Support\Traits\ForwardsCalls;
 
 abstract class AbstractRepository
 {
-    use MethodsTrait, ForwardsCalls;
+    use MethodsTrait, ForwardsCalls, FiltersQuery;
 
     protected AbstractRepository|Model $model;
 
@@ -55,5 +56,4 @@ abstract class AbstractRepository
 
         return (new static)->$model;
     }
-
 }

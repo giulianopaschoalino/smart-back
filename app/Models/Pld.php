@@ -12,4 +12,8 @@ use OwenIt\Auditing\Auditable;
 class Pld extends Model implements Auditing
 {
     use HasFactory, SoftDeletes, Auditable;
+
+    protected $table = "pld";
+
+    protected $guarded = ['id'];
 }
