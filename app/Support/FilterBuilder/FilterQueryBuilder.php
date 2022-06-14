@@ -24,8 +24,10 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
             }
         }
 
-        $builder->limit($this->limit);
-        $builder->offset($this->offset);
+        if (!empty($this->limit) && !empty($this->offset)){
+            $builder->limit($this->limit);
+            $builder->offset($this->offset);
+        }
 
         foreach ($this->getOrder() as $order) {
             $builder->orderBy($order->getField(), $order->getDirection());

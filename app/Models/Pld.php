@@ -16,4 +16,5 @@ class Pld extends Model implements Auditing
     protected $table = "pld";
 
     protected $guarded = ['id'];
+
 }
