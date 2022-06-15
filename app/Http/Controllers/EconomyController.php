@@ -1,28 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Actions\EconomyAction;
-use App\Helper\Model\filter\FilterBuilder;
-use App\Http\Requests\AzuxRequest;
-use App\Models\DadosCadastrais;
-use App\Models\Economy;
 use App\Repositories\Economy\EconomyContractInterface;
-use App\Repository\Economy\EconomyRepository;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Gate;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class EconomyController extends Controller
 {
+    use ApiResponse;
 
     public function __construct(
         protected EconomyContractInterface $economyContract
     )
     {
     }
+
+    public function grossEconomy(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->economyContract->getGrossEconomy($request->all());
+
+            return $this->successResponse($response);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function accumulatedEconomy(Request $request): JsonResponse
+    {
+        try {
+            $this->economyContract->getAccumulatedEconomy($request->all());
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function costEstimatesEconomy(Request $request): JsonResponse
+    {
+        try {
+            $this->economyContract->getCostEstimatesEconomy($request->all());
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function costMWhEconomy(Request $request): JsonResponse
+    {
+        try {
+            $response = $this->economyContract->getCostMWhEconomy($request->all());
+            return $this->successResponse($response);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public function __invoke(Request $request)
     {

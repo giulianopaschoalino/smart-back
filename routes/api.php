@@ -26,7 +26,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']);
     Route::post('pld/schedule', [\App\Http\Controllers\PldController::class, 'consumptionBySchedule']);
 
-    Route::post('economy', \App\Http\Controllers\EconomyController::class);
+    Route::post('economy/gross', [\App\Http\Controllers\EconomyController::class, 'grossEconomy']);
+    Route::post('economy/accumulated', [\App\Http\Controllers\EconomyController::class, 'accumulatedEconomy']);
+    Route::post('economy/estimates', [\App\Http\Controllers\EconomyController::class, 'costEstimatesEconomy']);
+    Route::post('economy/MWh', [\App\Http\Controllers\EconomyController::class, 'costMWhEconomy']);
+
+    Route::post('operation', [\App\Http\Controllers\OperationController::class, 'operationSummary']);
 
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
     Route::apiResource('notification', \App\Http\Controllers\NotificationController::class);

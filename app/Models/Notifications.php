@@ -21,6 +21,12 @@ class Notifications extends Model
         'user_id'
     ];
 
+    protected $hidden = [
+        'updated_at',
+        'created_at',
+        'deleted_at',
+    ];
+
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('d/m/Y H:i:s');
@@ -28,7 +34,7 @@ class Notifications extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'notificacoes_users', 'notification_id', 'user_id', );
+        return $this->belongsToMany(User::class, 'notificacoes_users', 'notification_id', 'user_id',);
     }
 
 }

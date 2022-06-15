@@ -128,7 +128,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
 
     }
 
-    public function getConsumptionBySchedule($params, $field = "dia_num")
+    public function getConsumptionBySchedule($params, $field = "dia_num"): Collection|array
     {
         $fields = static::getRowField();
 

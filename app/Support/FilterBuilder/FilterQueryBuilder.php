@@ -10,9 +10,16 @@ use Illuminate\Database\Eloquent\Builder;
 class FilterQueryBuilder extends EntityJson implements IFilterBuilder
 {
 
+    protected int $limit = 10;
+
+    protected int $offset = 0;
+
     protected array $filters = [];
 
     protected array $order = [];
+
+    protected array $fields = [];
+
 
     public function applyFilter(Builder $builder): Builder
     {
@@ -34,6 +41,22 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
         }
 
         return $builder;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     */
+    public function setFields(array $fields): void
+    {
+        $this->fields = $fields;
     }
 
     /**
@@ -68,6 +91,36 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
         $this->order = $this->arrayObjectCast($order,OrderItem::class);
     }
 
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
 
+    /**
+     * @param int $limit
+     */
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
+
+    /**
+     * @param int $offset
+     */
+    public function setOffset(int $offset): void
+    {
+        $this->offset = $offset;
+    }
 
 }

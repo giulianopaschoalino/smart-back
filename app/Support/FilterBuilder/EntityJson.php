@@ -29,14 +29,13 @@ abstract class EntityJson implements \JsonSerializable
     {
         $vars = get_object_vars($jsonData);
         foreach ($vars as $key => $value) {
-            if (is_array($value)){
-                $campo = strtolower($key);
-                $method = "set" . ucfirst($campo);
-                if (method_exists($this, $method)) {
-                    $this->$method($value);
+            $method = "set" . ucfirst($key);
+            if (method_exists($this, $method)) {
+                $this->$method($value);
+            } else {
+                if (property_exists(get_class($this), $key)) {
+                    $this->$key = $value;
                 }
-            } else{
-                $this->{$key} = $value;
             }
         }
     }

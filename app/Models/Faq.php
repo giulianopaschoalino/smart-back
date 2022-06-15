@@ -25,6 +25,12 @@ class Faq extends Model implements Auditing
         'deleted_at',
     ];
 
+    protected $hidden = [
+        'updated_at',
+        'created_at',
+        'deleted_at',
+    ];
+
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('d/m/Y H:i:s');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginResquest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -19,8 +20,10 @@ class AuthController extends Controller
             abort(401, 'Inavalid Credentials');
         }
 
-        $user = auth()->user();
-        $token = $user->createToken('API Token');
+        $user = User::with('roles')->firstWhere('email', $credentials['email']);
+        $role = $user->roles()->first();
+
+        $token = $user->createToken('API Token', [$role->name]);
 
         return response()->json([
             'token' => $token->plainTextToken,
