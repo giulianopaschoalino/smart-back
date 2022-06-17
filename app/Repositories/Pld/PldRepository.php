@@ -46,7 +46,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
 
         // Carbon::now()->format('m/Y')
         return $this->execute($fields)
-            ->where( DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY')"), '=', '04/2022')
+            ->where(DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY')"), '=', '04/2022')
             ->groupBy(['submarket', 'year_month', 'year_month_formatted'])
             ->get();
     }
@@ -115,7 +115,14 @@ class PldRepository extends AbstractRepository implements PldContractInterface
      */
     public function getConsumptionByDaily($params, $field = "mes_ref"): Collection|array
     {
-        $fields = static::getRowField();
+        $fields = [
+            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
+            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
+            'pld.submercado as submarket',
+            DB::raw("SUM(pld.valor) as value"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
+        ];
 
         $i = 0;
         foreach ($params['filters'] as $param) {
@@ -125,13 +132,23 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             $i++;
         }
 
-        return $this->execute($fields, $params)->get();
+        return $this->execute($fields, $params)
+            ->groupBy('day_formatted', 'day_calc', 'submarket', 'year_month', 'year_month_formatted')
+            ->get();
 
     }
 
     public function getConsumptionBySchedule($params, $field = "dia_num"): Collection|array
     {
-        $fields = static::getRowField();
+        $fields = [
+            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
+            'hora as hour',
+            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
+            'pld.submercado as submarket',
+            DB::raw("SUM(pld.valor) as value"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
+        ];
 
         $i = 0;
         foreach ($params['filters'] as $param) {
@@ -141,7 +158,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             $i++;
         }
 
-        return $this->execute($fields, $params)->get();
+        return $this->execute($fields, $params)
+            ->groupBy('day_formatted', 'hour', 'day_calc', 'submarket', 'year_month', 'year_month_formatted')
+            ->get();
     }
 
     protected static function getRowField(): array
@@ -151,6 +170,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             'hora as hour',
             DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
             'pld.submercado as submarket',
+            DB::raw("SUM(pld.valor) as value"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
         ];

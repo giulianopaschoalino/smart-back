@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 class FilterQueryBuilder extends EntityJson implements IFilterBuilder
 {
 
-    protected int $limit = 10;
+    protected int $limit = 20;
 
     protected int $offset = 0;
 
