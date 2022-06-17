@@ -19,10 +19,24 @@ Route::prefix('auth')->group(function (){
     Route::post('logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
 
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'show']);
+
+    Route::get('faq', [\App\Http\Controllers\FaqController::class, 'index']);
+    Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
+});
+
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
-    Route::apiResource('notification', \App\Http\Controllers\NotificationController::class);
-    Route::apiResource('faq', \App\Http\Controllers\FaqController::class);
+
+    Route::put('notification', [\App\Http\Controllers\NotificationController::class, 'update']);
+    Route::post('notification', [\App\Http\Controllers\NotificationController::class, 'store']);
+    Route::delete('notification', [\App\Http\Controllers\NotificationController::class, 'destroy']);
+
+    Route::put('faq', [\App\Http\Controllers\FaqController::class, 'update']);
+    Route::post('faq', [\App\Http\Controllers\FaqController::class, 'store']);
+    Route::delete('faq', [\App\Http\Controllers\FaqController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
