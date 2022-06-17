@@ -44,8 +44,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             DB::raw("SUM(pld.valor) as value")
         ];
 
+        // Carbon::now()->format('m/Y')
         return $this->execute($fields)
-            ->where( DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY')"), '=', Carbon::now()->format('m/Y'))
+            ->where( DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY')"), '=', '04/2022')
             ->groupBy(['submarket', 'year_month', 'year_month_formatted'])
             ->get();
     }
