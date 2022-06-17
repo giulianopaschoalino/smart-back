@@ -10,8 +10,8 @@ namespace App\Http\Requests;
 
 use Exception;
 use Illuminate\Http\Request;
-use App\Helper\Model\filter\FieldFilterBuilder;
-use App\Helper\Model\filter\FilterBuilder;
+use App\Helpers\Model\filter\FieldFilterBuilder;
+use App\Helpers\Model\filter\FilterBuilder;
 
 /**
  * Description of AzuxRequest

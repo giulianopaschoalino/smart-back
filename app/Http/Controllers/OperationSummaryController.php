@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Resources\OperationSummaryResource;
@@ -8,7 +10,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class OperationController extends Controller
+class OperationSummaryController extends Controller
 {
     use ApiResponse;
 

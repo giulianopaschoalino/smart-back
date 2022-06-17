@@ -32,7 +32,6 @@ class Pld extends Model implements Auditing
 
     protected $hidden = [
         'updated_at',
-        'created_at',
         'deleted_at',
     ];
 

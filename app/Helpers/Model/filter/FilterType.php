@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace App\Helper\Model\filter;
+namespace App\Helpers\Model\filter;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;

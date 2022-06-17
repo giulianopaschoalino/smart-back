@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\UserScope;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,13 +34,17 @@ class DadosTe extends Model implements Auditing
 
     protected $hidden = [
         'updated_at',
-        'created_at',
         'deleted_at',
     ];
 
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('d/m/Y H:i:s');
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new UserScope());
     }
 
 }

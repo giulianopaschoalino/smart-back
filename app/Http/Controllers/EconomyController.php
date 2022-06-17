@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EconomyResource;
 use App\Repositories\Economy\EconomyContractInterface;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -20,30 +21,51 @@ class EconomyController extends Controller
     {
     }
 
-    public function grossEconomy(Request $request): JsonResponse
+    public function index(Request $request)
+    {
+
+        try {
+            $response = $this->economyContract->selectGlobal($request->all());
+            return (new EconomyResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    public function grossAnnualEconomy(Request $request): JsonResponse
     {
         try {
-            $response = $this->economyContract->getGrossEconomy($request->all());
-
-            return $this->successResponse($response);
+            $response = $this->economyContract->getGrossAnnualEconomy($request->all());
+            return (new EconomyResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function accumulatedEconomy(Request $request): JsonResponse
+    public function grossMonthlyEconomy(Request $request): JsonResponse
     {
         try {
-            $this->economyContract->getAccumulatedEconomy($request->all());
+            $response = $this->economyContract->getGrossMonthlyEconomy($request->all());
+            return (new EconomyResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function costEstimatesEconomy(Request $request): JsonResponse
+    public function captiveMonthlyEconomy(Request $request): JsonResponse
     {
         try {
-            $this->economyContract->getCostEstimatesEconomy($request->all());
+            $response = $this->economyContract->getCaptiveMonthlyEconomy($request->all());
+            return (new EconomyResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -53,45 +75,13 @@ class EconomyController extends Controller
     {
         try {
             $response = $this->economyContract->getCostMWhEconomy($request->all());
-            return $this->successResponse($response);
+            return (new EconomyResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-
-    public function __invoke(Request $request)
-    {
-        try {
-            $this->economyContract->execute($request);
-        } catch (\Exception $exception) {
-            return \response()->json([], ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-//    public function index(): JsonResponse
-//    {
-//
-//        Economy::query()->select();
-//        abort_if(Gate::denies('teste-index'), ResponseAlias::HTTP_FORBIDDEN, '403 Forbidden');
-//
-//        $result = DadosCadastrais::query()->limit(10)->get();
-//
-//        return response()->json($result, 200);
-//
-//    }
-//
-//
-//    public function teste(Request $request): JsonResponse
-//    {
-//        try {
-//            $data = (new EconomyRepository())->execute($request->all());
-//            return \response()->json($data, ResponseAlias::HTTP_OK);
-//        } catch (\Exception $exception) {
-//            return \response()->json([], ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
-//        }
-//
-//    }
 
 }

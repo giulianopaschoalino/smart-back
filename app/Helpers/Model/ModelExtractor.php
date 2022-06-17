@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace App\Helper\Model;
+namespace App\Helpers\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;

@@ -28,10 +28,12 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $list = $this->user->withRelationsByAll('roles');
-            return response()->json($list, 200);
+            $response = $this->user->withRelationsByAll('roles');
+            return (new UserResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -46,12 +48,11 @@ class UserController extends Controller
     {
         try {
             $response = $this->user->create($request->all());
-
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_CREATED);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -65,9 +66,11 @@ class UserController extends Controller
     {
         try {
             $response = $this->user->find($id);
-            return response()->json($response, 200);
+            return (new UserResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -82,9 +85,11 @@ class UserController extends Controller
     {
         try {
             $response = $this->user->update($request->all(), $id);
-            return response()->json($response, 200);
+            return (new UserResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_ACCEPTED);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -98,9 +103,9 @@ class UserController extends Controller
     {
         try {
             $response = $this->user->destroy($id);
-            return response()->json($response, 200);
+            return response()->json($response, Response::HTTP_NO_CONTENT);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

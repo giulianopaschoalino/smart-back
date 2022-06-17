@@ -9,6 +9,7 @@ use App\Repositories\AbstractRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 
 class DadosTeRepository extends AbstractRepository implements DadosTeContractInterface
@@ -23,7 +24,7 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
     {
         $query = $this->model
             ->select(
-                'dados_te.mes',
+                DB::raw("TO_CHAR(TO_DATE(dados_te.mes, 'YYMM'), 'MM/YYYY') as mes"),
                 'dados_te.cod_smart_unidade',
                 'dados_te.operacao',
                 'dados_te.tipo',
@@ -31,12 +32,6 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
                 'dados_te.montante_nf',
                 'dados_te.preco_nf',
                 'dados_te.nf_c_icms'
-            )
-            ->join(
-                "dados_cadastrais",
-                "dados_cadastrais.cod_smart_unidade",
-                "=",
-                "dados_te.cod_smart_unidade"
             );
 
         if (!empty($params)) {

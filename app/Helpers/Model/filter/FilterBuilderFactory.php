@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helper\Model\filter;
+namespace App\Helpers\Model\filter;
 
 class FilterBuilderFactory
 {

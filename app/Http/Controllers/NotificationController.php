@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNotificationRequest;
@@ -22,9 +24,11 @@ class NotificationController extends Controller
     {
         try {
             $response = $this->notification->all();
-            return response()->json($response, 200);
+            return (new NotificationResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,7 +42,7 @@ class NotificationController extends Controller
                 ->response()
                 ->setStatusCode(Response::HTTP_CREATED);
         } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -46,9 +50,11 @@ class NotificationController extends Controller
     {
         try {
             $response =  $this->notification->find($id);
-            return response()->json($response, 200);
+            return (new NotificationResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,9 +62,11 @@ class NotificationController extends Controller
     {
         try {
             $response = $this->notification->update($request->all(), $id);
-            return response()->json($response, 200);
+            return (new NotificationResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_ACCEPTED);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -66,9 +74,9 @@ class NotificationController extends Controller
     {
         try {
             $response = $this->notification->destroy($id);
-            return response()->json($response, 200);
+            return response()->json($response, Response::HTTP_NO_CONTENT);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

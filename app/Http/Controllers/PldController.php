@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Http\Resources\OverviewResource;
+use App\Http\Resources\PldResource;
 use App\Repositories\Pld\PldContractInterface;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -21,11 +23,11 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->getOverviewByRegion();
-            return (new OverviewResource($response))
+            return (new PldResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -33,9 +35,11 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->getListConsumption($request->all());
-            return response()->json($response, 200);
+            return (new PldResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -43,9 +47,11 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->getConsumptionByDaily($request->all());
-            return response()->json($response, 200);
+            return (new PldResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -53,9 +59,11 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->getConsumptionBySchedule($request->all());
-            return response()->json($response, 200);
+            return (new PldResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
         }catch (\Exception $ex){
-            return $this->errorResponse(false, $ex->getMessage(), 404);
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
