@@ -62,14 +62,30 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             DB::raw('pld_sudeste.value as sudeste'),
         ];
 
+        $data = [];
         $sql = DB::table('pld')
             ->select([
                 'submercado as submarket',
                 'mes_ref as year_month',
-                DB::raw('SUM(valor) as value')
+                DB::raw('SUM(valor) as value'),
             ])
             ->where('pld.submercado', '=', 'NORTE')
             ->groupBy('submarket', 'year_month');
+
+        $query = DB::table('pld')->fromSub($sql, 'norte');
+        $max_norte = $query->max('value');
+        $min_norte = $query->min('value');
+        $desvio_padrao = static::standardDeviation($sql->get()->toArray());
+
+        $data[] = ['norte' =>
+            [
+                'max' => $max_norte,
+                'min' => $min_norte,
+                'desv_pad' => $desvio_padrao
+            ]
+        ];
+
+        dd($data);
 
         $sql2 = DB::table('pld')
             ->select([
@@ -80,6 +96,19 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->where('pld.submercado', '=', 'SUL')
             ->groupBy('submarket', 'year_month');
 
+        $query = DB::table('pld')->fromSub($sql2, 'sul');
+        $max_sul = $query->max('value');
+        $min_sul = $query->min('value');
+        $desvio_padrao = static::standardDeviation($sql2->get()->toArray());
+
+        $data[] = ['sul' =>
+            [
+                'max' => $max_sul,
+                'min' => $min_sul,
+                'desv_pad' => $desvio_padrao
+            ]
+        ];
+
         $sql3 = DB::table('pld')
             ->select([
                 'submercado as submarket',
@@ -88,6 +117,20 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ])
             ->where('pld.submercado', '=', 'NORDESTE')
             ->groupBy('submarket', 'year_month');
+
+        $query = DB::table('pld')->fromSub($sql3, 'nordeste');
+        $max_nordeste = $query->max('value');
+        $min_nordeste = $query->min('value');
+        $desvio_padrao = static::standardDeviation($sql3->get()->toArray());
+
+
+        $data[] = ['nordeste' =>
+            [
+                'max' => $max_nordeste,
+                'min' => $min_nordeste,
+                'desv_pad' => $desvio_padrao
+            ]
+        ];
 
         $sql4 = DB::table('pld')
             ->select([
@@ -98,8 +141,20 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->where('pld.submercado', '=', 'SUDESTE')
             ->groupBy('submarket', 'year_month');
 
+        $query = DB::table('pld')->fromSub($sql4, 'sudeste');
+        $max_sudeste = $query->max('value');
+        $min_sudeste = $query->min('value');
+        $desvio_padrao = static::standardDeviation($sql4->get()->toArray());
 
-        return $this->model->select($fields)->joinSub($sql, 'pld_norte', function ($join) {
+        $data[] = ['nordeste' =>
+            [
+                'max' => $max_sudeste,
+                'min' => $min_sudeste,
+                'desv_pad' => $desvio_padrao
+            ]
+        ];
+
+        $result = $this->model->select($fields)->joinSub($sql, 'pld_norte', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_norte.year_month');
         })->joinSub($sql2, 'pld_sul', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_sul.year_month');
@@ -108,6 +163,10 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         })->joinSub($sql4, 'pld_sudeste', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_sudeste.year_month');
         })->distinct()->get();
+
+
+
+
     }
 
     /**
@@ -163,17 +222,13 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->get();
     }
 
-    protected static function getRowField(): array
+    protected static function standardDeviation($array): float|bool
     {
-        return [
-            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
-            'hora as hour',
-            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
-            'pld.submercado as submarket',
-            DB::raw("SUM(pld.valor) as value"),
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
-        ];
+       return stats_standard_deviation(collect($array)->pluck('value')->all());
+    }
+
+    protected static function responsePld($query, $name){
+
     }
 
 }

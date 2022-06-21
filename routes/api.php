@@ -30,13 +30,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
 
-    Route::put('notification', [\App\Http\Controllers\NotificationController::class, 'update']);
+    Route::put('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'update']);
     Route::post('notification', [\App\Http\Controllers\NotificationController::class, 'store']);
-    Route::delete('notification', [\App\Http\Controllers\NotificationController::class, 'destroy']);
+    Route::delete('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
 
-    Route::put('faq', [\App\Http\Controllers\FaqController::class, 'update']);
+    Route::put('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'update']);
     Route::post('faq', [\App\Http\Controllers\FaqController::class, 'store']);
-    Route::delete('faq', [\App\Http\Controllers\FaqController::class, 'destroy']);
+    Route::delete('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
