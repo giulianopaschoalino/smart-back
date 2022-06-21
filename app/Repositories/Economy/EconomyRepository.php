@@ -6,9 +6,12 @@ namespace App\Repositories\Economy;
 
 use App\Models\Economy;
 use App\Repositories\AbstractRepository;
+use DateInterval;
+use DatePeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EconomyRepository extends AbstractRepository implements EconomyContractInterface
 {
@@ -93,7 +96,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             "economia.dad_estimado"
         ];
 
-        return $this->execute($params, $field)
+        $result = $this->execute($params, $field)
             ->whereBetween(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 [
@@ -103,24 +106,44 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->groupBy(['mes', 'dad_estimado'])
             ->get();
 
+        return static::checkDate($result);
     }
 
 
-    protected function where($query)
+    public static function checkDate($value): array
     {
-        return $query->where(
-            DB::raw()
-        );
+
+        $val = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])->explode('/')->offsetGet(1)))->unique()->toArray();
+
+        $date_stat = current($val);
+        $date_end = end($val);
+        $start_date = date_create("{$date_stat[0]}-01-01");
+        $end_date = date_create("{$date_end[0]}-03-30"); // If you want to include this date, add 1 day
+
+        $interval = DateInterval::createFromDateString('1 months');
+        $daterange = new DatePeriod($start_date, $interval, $end_date);
+
+        $date = [];
+        foreach ($daterange as $date1) {
+            $date[] = $date1->format('m/Y');
+        }
+
+        $arr = collect($value)->toArray();
+
+        $i = 0;
+        foreach ($date as $dt) {
+            if (empty($arr[$i])) {
+                $arr[] = ['mes' => $dt];
+            }
+            $i++;
+        }
+        sort($arr);
+
+        return $arr;
+
     }
 
 
-    protected function getRowField(): array
-    {
-        return [
-            DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'MM/YYYY') as mes"),
-            DB::raw("TRIM(TO_CHAR(economia.custo_cativo, '99999999.99')) as custo_cativo"),
-            DB::raw("TRIM(TO_CHAR(economia.custo_livre, '99999999.99')) as custo_livre"),
-            DB::raw("COALESCE(economia.economia_mensal / NULLIF(economia.custo_livre, 0), 0) as custo")
-        ];
-    }
+
+
 }

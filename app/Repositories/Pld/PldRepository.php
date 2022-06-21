@@ -6,7 +6,6 @@ namespace App\Repositories\Pld;
 
 use App\Models\Pld;
 use App\Repositories\AbstractRepository;
-use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
