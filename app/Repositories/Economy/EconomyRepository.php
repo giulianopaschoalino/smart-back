@@ -117,8 +117,9 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
 
         $date_stat = current($val);
         $date_end = end($val);
+
         $start_date = date_create("{$date_stat[0]}-01-01");
-        $end_date = date_create("{$date_end[0]}-03-30"); // If you want to include this date, add 1 day
+        $end_date = date_create("{$date_end[0]}-03-30");// If you want to include this date, add 1 day
 
         $interval = DateInterval::createFromDateString('1 months');
         $daterange = new DatePeriod($start_date, $interval, $end_date);
@@ -133,11 +134,17 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
         $i = 0;
         foreach ($date as $dt) {
             if (empty($arr[$i])) {
+                $arr[] = [];
+            }
+
+            if (in_array($dt, $arr[$i])){
                 $arr[] = ['mes' => $dt];
             }
+
             $i++;
         }
-        sort($arr);
+
+        dd($arr);
 
         return $arr;
 

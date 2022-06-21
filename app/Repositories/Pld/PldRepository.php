@@ -61,7 +61,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             DB::raw('pld_sudeste.value as sudeste'),
         ];
 
-        $data = [];
+        $result = [];
         $sql = DB::table('pld')
             ->select([
                 'submercado as submarket',
@@ -72,7 +72,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql, 'norte');
-        $data[] = static::responsePld($query, $sql, 'norte');
+        $result[] = static::responsePld($query, $sql, 'norte');
 
         $sql2 = DB::table('pld')
             ->select([
@@ -84,7 +84,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql2, 'sul');
-        $data[] = static::responsePld($query, $sql2, 'sul');
+        $result[] = static::responsePld($query, $sql2, 'sul');
 
 
         $sql3 = DB::table('pld')
@@ -97,7 +97,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql3, 'nordeste');
-        $data[] = static::responsePld($query, $sql3, 'nordeste');
+        $result[] = static::responsePld($query, $sql3, 'nordeste');
 
         $sql4 = DB::table('pld')
             ->select([
@@ -109,10 +109,10 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql4, 'sudeste');
-        $data[] = static::responsePld($query, $sql4, 'sudeste');
+        $result[] = static::responsePld($query, $sql4, 'sudeste');
 
 
-        $result = $this->model->select($fields)->joinSub($sql, 'pld_norte', function ($join) {
+        $data = $this->model->select($fields)->joinSub($sql, 'pld_norte', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_norte.year_month');
         })->joinSub($sql2, 'pld_sul', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_sul.year_month');
@@ -122,7 +122,10 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             $join->on('pld.mes_ref', '=', 'pld_sudeste.year_month');
         })->distinct()->get();
 
-        return collect($result)->push(['result' => $data])->all();
+        return [
+            'data' => $data,
+            'result' => $result
+        ];
     }
 
     /**
@@ -185,12 +188,10 @@ class PldRepository extends AbstractRepository implements PldContractInterface
 
     protected static function responsePld($query, $sql, $name)
     {
-        return [$name =>
-            [
-                'max' => $query->max('value'),
-                'min' => $query->min('value'),
-                'desv_pad' => static::standardDeviation($sql->get()->toArray()),
-            ]
+        return [
+            "{$name}_max" => $query->max('value'),
+            "{$name}_min" => $query->min('value'),
+            "{$name}desv_pad" => static::standardDeviation($sql->get()->toArray()),
         ];
 
     }
