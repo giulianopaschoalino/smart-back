@@ -20,6 +20,8 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
 
     protected array $fields = [];
 
+    protected bool $distinct = false;
+
 
     public function applyFilter(Builder $builder): Builder
     {
@@ -122,5 +124,25 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
     {
         $this->offset = $offset;
     }
+
+    /**
+     * @return bool
+     */
+    public function isDistinct(): bool
+    {
+        return $this->distinct;
+    }
+
+    /**
+     * @param bool $distinct
+     */
+    public function setDistinct(bool $distinct): void
+    {
+        $this->distinct = $distinct;
+    }
+
+
+
+
 
 }

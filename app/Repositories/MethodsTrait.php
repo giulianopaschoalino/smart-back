@@ -38,7 +38,7 @@ trait MethodsTrait
         return $this->model->with($relations)->get();
     }
 
-    public function search($params, $distinct = false)
+    public function search($params)
     {
         $filter = static::getFilterBuilder($params);
 
@@ -48,7 +48,7 @@ trait MethodsTrait
 
         $response = $filter->applyFilter($query);
 
-        if (isset($distinct)){
+        if ($filter->isDistinct()){
             $response = $response->distinct();
         }
 
