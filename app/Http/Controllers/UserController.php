@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Repositories\Users\UserContractInterface;
@@ -47,7 +48,15 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): JsonResponse
     {
         try {
-            $response = $this->user->create($request->all());
+            $user = $request->all();
+            $user['password'] = bcrypt($request->password);
+
+            if ($request->hasFile('profile_picture'))
+            {
+                $user['profile_picture'] =  url('storage') . '/' . $request->file('profile_picture')->store('users');
+            }
+
+            $response = $this->user->create($user);
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_CREATED);

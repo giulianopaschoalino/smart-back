@@ -10,4 +10,5 @@ interface PldContractInterface extends ContractInterface
     public function getConsumptionByDaily($params);
     public function getListConsumption($params);
     public function getConsumptionBySchedule($params);
+    public function searchPLd($params);
 }

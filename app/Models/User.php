@@ -24,6 +24,7 @@ class User extends Authenticatable implements Auditing
         'name',
         'email',
         'password',
+        'profile_picture',
         'created_at',
         'updated_at',
         'deleted_at',

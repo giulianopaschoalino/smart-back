@@ -10,5 +10,5 @@ interface ContractInterface
     public function update(array $params, $id);
     public function destroy($id);
     public function withRelationsByAll($relations);
-    public function selectGlobal($params);
+    public function search($params);
 }

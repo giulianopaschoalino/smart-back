@@ -38,14 +38,12 @@ trait MethodsTrait
         return $this->model->with($relations)->get();
     }
 
-    public function selectGlobal($params)
+    public function search($params)
     {
         $filter = static::getFilterBuilder($params);
 
         $query = $this->model->select($filter->getFields());
 
-        $result = $filter->applyFilter($query)->get();
-
-        dd($result);
+        return $filter->applyFilter($query)->get();
     }
 }

@@ -40,6 +40,7 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
+    Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
     Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']);
     Route::post('pld/list', [\App\Http\Controllers\PldController::class, 'listConsumption']);
     Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']);

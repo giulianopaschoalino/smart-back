@@ -19,6 +19,18 @@ class PldController extends Controller
         protected PldContractInterface $pldContract
     ){}
 
+    public function index(Request $request)
+    {
+        try {
+            $response = $this->pldContract->searchPLd($request->all());
+            return (new PldResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        }catch (\Exception $ex){
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function overviewByRegion()
     {
         try {

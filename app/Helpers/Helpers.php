@@ -5,24 +5,14 @@ namespace App\Helpers;
 
 class Helpers
 {
-    public static function object_to_array($object)
+    public static function uploadFiles($params, $field): ?string
     {
-        if (!is_object($object) && !is_array($object)) {
-            return $object;
+        $result = null;
+        if ($params->hasFile($field))
+        {
+            $result = url('storage') . '/' . $params->file($field)->store('users');
         }
-        return array_map([__CLASS__, 'object_to_array'], (array) $object);
+        return $result;
     }
 
-    public static function array_enkeyize($array, $iten): array
-    {
-        $keized = [];
-        foreach ($array as $key => $value) {
-            foreach ($value as $v_key => $v_value) {
-                if ($v_key === $iten) {
-                    $keized[$v_value] = $array[$key];
-                }
-            }
-        }
-        return $keized;
-    }
 }
