@@ -113,13 +113,16 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     public static function checkDate($value): array
     {
 
-        $val = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])->explode('/')->offsetGet(1)))->unique()->toArray();
-
-        $date_stat = current($val);
-        $date_end = end($val);
+        $year = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
+            ->explode('/')->offsetGet(1)))->unique()->toArray();
+        $month = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
+            ->explode('/')->offsetGet(0)))->unique()->toArray();
+        $month_stat = end($month);
+        $date_stat = current($year);
+        $date_end = end($year);
 
         $start_date = date_create("{$date_stat[0]}-01-01");
-        $end_date = date_create("{$date_end[0]}-03-30");// If you want to include this date, add 1 day
+        $end_date = date_create("{$date_end[0]}-{$month_stat[0]}-30");
 
         $interval = DateInterval::createFromDateString('1 months');
         $daterange = new DatePeriod($start_date, $interval, $end_date);
@@ -131,26 +134,20 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
 
         $arr = collect($value)->toArray();
 
-        $i = 0;
         foreach ($date as $dt) {
-            if (empty($arr[$i])) {
-                $arr[] = [];
-            }
-
-            if (in_array($dt, $arr[$i])){
+            if (!in_array($dt, array_column($arr, 'mes'))) {
                 $arr[] = ['mes' => $dt];
             }
-
-            $i++;
         }
 
-        dd($arr);
+        usort($arr, function ($a, $b, $i = 'mes') {
+            $t1 = strtotime(str_replace('/', '-', $a[$i]));
+            $t2 = strtotime(str_replace('/', '-', $b[$i]));
+            return $t1 - $t2;
+        });
 
         return $arr;
-
     }
-
-
 
 
 }

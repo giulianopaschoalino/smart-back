@@ -61,7 +61,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             DB::raw('pld_sudeste.value as sudeste'),
         ];
 
-        $result = [];
+        $res_max = [];
+        $res_min = [];
+        $desv_pad = [];
         $sql = DB::table('pld')
             ->select([
                 'submercado as submarket',
@@ -72,7 +74,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql, 'norte');
-        $result[] = static::responsePld($query, $sql, 'norte');
+        $res_max["norte_max"] = $query->max('value');
+        $res_min["norte_min"] = $query->min('value');
+        $desv_pad["norte_desv_pad"] = static::standardDeviation($sql->get()->toArray());
 
         $sql2 = DB::table('pld')
             ->select([
@@ -84,8 +88,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql2, 'sul');
-        $result[] = static::responsePld($query, $sql2, 'sul');
-
+        $res_max["sul_max"] = $query->max('value');
+        $res_min["sul_min"] = $query->min('value');
+        $desv_pad["sul_desv_pad"] = static::standardDeviation($sql2->get()->toArray());
 
         $sql3 = DB::table('pld')
             ->select([
@@ -97,7 +102,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql3, 'nordeste');
-        $result[] = static::responsePld($query, $sql3, 'nordeste');
+        $res_max["nordeste_max"] = $query->max('value');
+        $res_min["nordeste_min"] = $query->min('value');
+        $desv_pad["nordeste_desv_pad"] = static::standardDeviation($sql3->get()->toArray());
 
         $sql4 = DB::table('pld')
             ->select([
@@ -109,8 +116,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql4, 'sudeste');
-        $result[] = static::responsePld($query, $sql4, 'sudeste');
-
+        $res_max["sudeste_max"] = $query->max('value');
+        $res_min["sudeste_min"] = $query->min('value');
+        $desv_pad["sudeste_desv_pad"] = static::standardDeviation($sql3->get()->toArray());
 
         $data = $this->model->select($fields)->joinSub($sql, 'pld_norte', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_norte.year_month');
@@ -124,7 +132,11 @@ class PldRepository extends AbstractRepository implements PldContractInterface
 
         return [
             'data' => $data,
-            'result' => $result
+            'result' => [
+                $res_max,
+                $res_min,
+                $desv_pad
+            ]
         ];
     }
 
@@ -184,16 +196,6 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     protected static function standardDeviation($array): float|bool
     {
         return stats_standard_deviation(collect($array)->pluck('value')->all());
-    }
-
-    protected static function responsePld($query, $sql, $name)
-    {
-        return [
-            "{$name}_max" => $query->max('value'),
-            "{$name}_min" => $query->min('value'),
-            "{$name}desv_pad" => static::standardDeviation($sql->get()->toArray()),
-        ];
-
     }
 
 }
