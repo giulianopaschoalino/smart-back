@@ -31,15 +31,6 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         return $query;
     }
 
-    public function searchPLd($params)
-    {
-        $fields = [
-            'pld.mes_ref as year_month',
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
-        ];
-
-        return $this->execute($fields, $params)->distinct()->get();
-    }
 
     /**
      * @throws BindingResolutionException

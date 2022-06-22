@@ -22,7 +22,7 @@ class PldController extends Controller
     public function index(Request $request)
     {
         try {
-            $response = $this->pldContract->searchPLd($request->all());
+            $response = $this->pldContract->search($request->all());
             return (new PldResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
