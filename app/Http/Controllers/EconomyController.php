@@ -7,14 +7,9 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EconomyResource;
 use App\Repositories\Economy\EconomyContractInterface;
 use App\Traits\ApiResponse;
-use Carbon\Carbon;
-use DateInterval;
-use DatePeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class EconomyController extends Controller
 {
@@ -30,7 +25,7 @@ class EconomyController extends Controller
     {
 
         try {
-            $response = $this->economyContract->selectGlobal($request->all());
+            $response = $this->economyContract->search($request->all());
             return (new EconomyResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);

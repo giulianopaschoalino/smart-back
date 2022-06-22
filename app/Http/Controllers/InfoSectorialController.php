@@ -31,14 +31,14 @@ class InfoSectorialController extends Controller
 
     public function download()
     {
-        $file = public_path("/file/Clockify_Time_Report_Detailed_01_05_2022-31_05_2022.pdf");
+        $file = public_path("Clockify_Time_Report_Detailed_01_05_2022-31_05_2022.pdf");
 
         $path = storage_path("public/file/Clockify_Time_Report_Detailed_01_05_2022-31_05_2022.pdf");
-        
+
 
         $headers = ['Content-Type: application/pdf'];
         $newName = 'itsolutionstuff-pdf-file-'.time().'.pdf';
 
-        return response()->download($path, $newName, $headers);
+        return response()->download($file, $newName, $headers);
     }
 }

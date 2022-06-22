@@ -26,13 +26,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('faq', [\App\Http\Controllers\FaqController::class, 'index']);
     Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
 
-    Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
-
     Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
+
+    Route::post('units', [\App\Http\Controllers\ClientController::class, 'index']);
 
     Route::put('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'update']);
     Route::post('notification', [\App\Http\Controllers\NotificationController::class, 'store']);
@@ -58,8 +58,9 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('economy/MWh', [\App\Http\Controllers\EconomyController::class, 'costMWhEconomy']);
 
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
+    Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 
-    Route::post('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
+    Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
 
 

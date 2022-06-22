@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\DadosCadastrais\DadosCadastraisContractInterface;
+use App\Repositories\DadosCadastrais\DadosCadastraisRepository;
 use App\Repositories\DadosTe\DadosTeContractInterface;
 use App\Repositories\DadosTe\DadosTeRepository;
 use App\Repositories\Economy\EconomyContractInterface;
@@ -48,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DadosTeContractInterface::class,
             DadosTeRepository::class
+        );
+        $this->app->bind(
+            DadosCadastraisContractInterface::class,
+            DadosCadastraisRepository::class
         );
     }
 
