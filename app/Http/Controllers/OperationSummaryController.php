@@ -20,6 +20,18 @@ class OperationSummaryController extends Controller
     {
     }
 
+    public function index(Request $request)
+    {
+        try {
+            $response = $this->dadosTeContract->search($request->all(), true);
+            return (new OperationSummaryResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function operationSummary(Request $request)
     {
         try {

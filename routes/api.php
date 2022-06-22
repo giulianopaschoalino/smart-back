@@ -52,7 +52,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('economy/estimates', [\App\Http\Controllers\EconomyController::class, 'captiveMonthlyEconomy']);
     Route::post('economy/MWh', [\App\Http\Controllers\EconomyController::class, 'costMWhEconomy']);
 
-    Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
+    Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
+    Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 });
 
 

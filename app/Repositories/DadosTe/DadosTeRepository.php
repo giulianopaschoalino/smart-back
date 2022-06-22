@@ -20,19 +20,9 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
         parent::__construct($dadosTe);
     }
 
-    private function execute($params): Builder
+    private function execute($fields, $params): Builder
     {
-        $query = $this->model
-            ->select(
-                DB::raw("TO_CHAR(TO_DATE(dados_te.mes, 'YYMM'), 'MM/YYYY') as mes"),
-                'dados_te.cod_smart_unidade',
-                'dados_te.operacao',
-                'dados_te.tipo',
-                'dados_te.perfil_contr as contraparte',
-                'dados_te.montante_nf',
-                'dados_te.preco_nf',
-                'dados_te.nf_c_icms'
-            );
+        $query = $this->model->select($fields);
 
         if (!empty($params)) {
             $query = static::getFilterBuilder($params)->applyFilter($query);
@@ -43,8 +33,19 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
 
     public function getOperationSummary($params): Collection|array
     {
+        $fields = [
+            DB::raw("TO_CHAR(TO_DATE(dados_te.mes, 'YYMM'), 'MM/YYYY') as mes"),
+            'dados_te.cod_smart_unidade',
+            'dados_te.operacao',
+            'dados_te.tipo',
+            'dados_te.perfil_contr as contraparte',
+            'dados_te.montante_nf',
+            'dados_te.preco_nf',
+            'dados_te.nf_c_icms'
+        ];
+
         $params = static::filterRow($params);
-        return $this->execute($params)->get();
+        return $this->execute($fields, $params)->get();
     }
 
     public static function filterRow($params, $field = 'mes'): array
