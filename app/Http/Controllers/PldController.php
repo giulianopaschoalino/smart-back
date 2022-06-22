@@ -12,7 +12,6 @@ use Illuminate\Http\Response;
 
 class PldController extends Controller
 {
-
     use ApiResponse;
 
     public function __construct(
@@ -23,6 +22,9 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->search($request->all());
+
+            dd($response);
+
             return (new PldResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);

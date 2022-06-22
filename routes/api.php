@@ -25,6 +25,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('faq', [\App\Http\Controllers\FaqController::class, 'index']);
     Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
+
+    Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
+
+    Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
@@ -42,7 +46,6 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
-    Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
     Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']);
     Route::post('pld/list', [\App\Http\Controllers\PldController::class, 'listConsumption']);
     Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']);
@@ -55,7 +58,6 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('economy/MWh', [\App\Http\Controllers\EconomyController::class, 'costMWhEconomy']);
 
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
-    Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 
     Route::post('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
