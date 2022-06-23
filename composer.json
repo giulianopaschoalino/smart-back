@@ -11,7 +11,8 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "owen-it/laravel-auditing": "^13.0",
-        "umbrellio/laravel-pg-extensions": "^5.3"
+        "umbrellio/laravel-pg-extensions": "^5.3",
+        "ext-fileinfo": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

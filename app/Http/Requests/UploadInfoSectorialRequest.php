@@ -24,7 +24,7 @@ class UploadInfoSectorialRequest extends FormRequest
     public function rules()
     {
         return [
-            'reportfile' => 'required|mimes:pdf',
+            'file' =>  ['required','mimes:pdf'],
         ];
     }
 }

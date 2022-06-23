@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadInfoSectorialRequest;
+use App\Models\InfoSectorial;
 use App\Traits\ApiResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class InfoSectorialController extends Controller
@@ -14,31 +16,37 @@ class InfoSectorialController extends Controller
     {
         $data = $uploadInfoSectorialRequest->all();
 
-        if (!$uploadInfoSectorialRequest->hasFile('reportfile')) {
+        if (!$uploadInfoSectorialRequest->hasFile('file')) {
             return $this->errorResponse( false, '', 500);
         }
 
-        $file = $uploadInfoSectorialRequest->file('reportfile');
+        $file = $uploadInfoSectorialRequest->file('file');
 
         $data['name'] = Str::of($file->getClientOriginalName())->explode('.')->offsetGet(0);
+        $data['uid'] = Str::of($file->hashName())->explode('.')->offsetGet(0);
         $extension = $file->getClientOriginalExtension();
+        $data['path'] = $file->storeAs("pdf",  $data['uid'].".{$extension}");
 
-        $data['reportfile'] = $file->storeAs('file', $data['name'].".{$extension}");
-
-        dd($data);
+        return InfoSectorial::query()->create($data);
 
     }
 
     public function download()
     {
-        $file = public_path("Clockify_Time_Report_Detailed_01_05_2022-31_05_2022.pdf");
+       $created_at = InfoSectorial::query()->max('created_at');
 
-        $path = storage_path("public/file/Clockify_Time_Report_Detailed_01_05_2022-31_05_2022.pdf");
+       $data = InfoSectorial::query()->where('created_at', '=', $created_at)->first();
 
+       if (Storage::disk('public')->exists($data->path))
+       {
+           $path = Storage::disk('public')->path(($data->path));
 
-        $headers = ['Content-Type: application/pdf'];
-        $newName = 'itsolutionstuff-pdf-file-'.time().'.pdf';
+          $heders = [
+               'Content-Type' => mime_content_type($path)
+           ];
 
-        return response()->download($file, $newName, $headers);
+           return response()->download($path, $data->name, $heders);
+
+       }
     }
 }

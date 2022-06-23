@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('info_sectorial', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('uid')->unique()->index();
+            $table->string('name');
             $table->string('path');
             $table->timestamps();
             $table->softDeletes();

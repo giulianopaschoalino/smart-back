@@ -42,7 +42,7 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::post('faq', [\App\Http\Controllers\FaqController::class, 'store']);
     Route::delete('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'destroy']);
 
-    Route::post('updateFile', [\App\Http\Controllers\InfoSectorialController::class, 'updateFile']);
+
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 
+    Route::post('updateFile', [\App\Http\Controllers\InfoSectorialController::class, 'updateFile']);
     Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
 
