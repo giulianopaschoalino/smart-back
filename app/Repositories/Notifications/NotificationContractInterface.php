@@ -6,5 +6,6 @@ use App\Repositories\ContractInterface;
 
 interface NotificationContractInterface extends ContractInterface
 {
+    public function getNotify();
 
 }

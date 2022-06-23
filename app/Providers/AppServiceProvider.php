@@ -10,6 +10,8 @@ use App\Repositories\Economy\EconomyContractInterface;
 use App\Repositories\Economy\EconomyRepository;
 use App\Repositories\Faqs\FaqContractInterface;
 use App\Repositories\Faqs\FaqRepository;
+use App\Repositories\Med5min\Med5minContractInterface;
+use App\Repositories\Med5min\Med5minRepository;
 use App\Repositories\Notifications\NotificationContractInterface;
 use App\Repositories\Notifications\NotificationRepository;
 use App\Repositories\Pld\PldContractInterface;
@@ -54,6 +56,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DadosCadastraisContractInterface::class,
             DadosCadastraisRepository::class
+        );
+        $this->app->bind(
+          Med5minContractInterface::class,
+            Med5minRepository::class
         );
     }
 

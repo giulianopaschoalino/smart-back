@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 trait MethodsTrait
 {
@@ -37,6 +36,7 @@ trait MethodsTrait
     {
         return $this->model->with($relations)->get();
     }
+
 
     public function search($params)
     {

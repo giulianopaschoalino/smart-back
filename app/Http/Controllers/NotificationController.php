@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
+
 class NotificationController extends Controller
 {
     use ApiResponse;
@@ -75,6 +76,16 @@ class NotificationController extends Controller
         try {
             $response = $this->notification->destroy($id);
             return response()->json($response, Response::HTTP_NO_CONTENT);
+        }catch (\Exception $ex){
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function notify()
+    {
+        try {
+            $response = $this->notification->getNotify();
+            return response()->json($response, Response::HTTP_OK);
         }catch (\Exception $ex){
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

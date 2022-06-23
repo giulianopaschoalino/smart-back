@@ -62,6 +62,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 
     Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
+
+    Route::post('notify', [\App\Http\Controllers\NotificationController::class, 'notify']);
 });
 
 
