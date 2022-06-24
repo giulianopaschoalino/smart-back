@@ -41,12 +41,8 @@ class InfoSectorialController extends Controller
        {
            return $this->errorResponse( false, '', 500);
        }
+       $path['path'] = Storage::disk('s3')->url($data->path);
 
-        $headers = [
-            'Content-Type'        => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'. basename($data->path) .'"',
-        ];
-
-        return response()->make(Storage::disk('s3')->get($data->path), 200, $headers);
+       return response()->json($path, 200);
     }
 }
