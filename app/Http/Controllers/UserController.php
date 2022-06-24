@@ -12,6 +12,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -19,7 +20,9 @@ class UserController extends Controller
 
     public function __construct(
         protected UserContractInterface $user
-    ){}
+    )
+    {
+    }
 
     /**
      * Display a listing of the resource.
@@ -33,7 +36,7 @@ class UserController extends Controller
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -51,16 +54,20 @@ class UserController extends Controller
             $user = $request->all();
             $user['password'] = bcrypt($request->password);
 
-            if ($request->hasFile('profile_picture'))
-            {
-                $user['profile_picture'] =  url('storage') . '/' . $request->file('profile_picture')->store('users');
+            if (!$request->hasFile('profile_picture')) {
+                return $this->errorResponse(false, '', 500);
             }
 
+            $file = $request->file('profile_picture');
+
+            $path = $file->storeAs('avatars', $file->hashName(),'s3');
+
+            $user['profile_picture'] =  Storage::disk('s3')->url($path);
             $response = $this->user->create($user);
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_CREATED);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -78,7 +85,7 @@ class UserController extends Controller
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -97,7 +104,7 @@ class UserController extends Controller
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_ACCEPTED);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -113,7 +120,7 @@ class UserController extends Controller
         try {
             $response = $this->user->destroy($id);
             return response()->json($response, Response::HTTP_NO_CONTENT);
-        }catch (\Exception $ex){
+        } catch (\Exception $ex) {
             return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

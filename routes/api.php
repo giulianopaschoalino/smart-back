@@ -27,12 +27,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
 
     Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
+
+    Route::post('units', [\App\Http\Controllers\ClientController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
-
-    Route::post('units', [\App\Http\Controllers\ClientController::class, 'index']);
 
     Route::put('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'update']);
     Route::post('notification', [\App\Http\Controllers\NotificationController::class, 'store']);
