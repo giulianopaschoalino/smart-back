@@ -19,6 +19,8 @@ class Economy extends Model implements Auditing
 
     protected $guarded = ['cod_te', 'cod_smart_unidade'];
 
+    public $incrementing = false;
+
     protected $fillable = [
         'mes',
         'custo_cativo',

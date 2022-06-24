@@ -19,17 +19,17 @@ return new class extends Migration
             $table->text('mes')->nullable();
             $table->text('operacao')->nullable();
             $table->text('tipo')->nullable();
-            $table->numeric('montante_nf')->nullable();
-            $table->numeric('preco_nf')->nullable();
-            $table->numeric('nf_c_icms')->nullable();
+            $table->decimal('montante_nf', 30, 10)->nullable();
+            $table->decimal('preco_nf', 30, 10)->nullable();
+            $table->decimal('nf_c_icms', 30, 10)->nullable();
             $table->text('perfil_contr')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('cod_smart_unidade', 'dados_te_cod_smart_unidade_fkey')
-                ->references('cod_smart_unidade')->on('dados_cadastrais')->onDelete('no action')->onUpdate('no action')->notValid();
+                ->references('cod_smart_unidade')->on('dados_cadastrais')->onDelete('no action')->onUpdate('no action');
 
-            $table->primary(['cod_te','cod_smart_unidade']);
+            $table->primary(['cod_te', 'cod_smart_unidade']);
         });
     }
 

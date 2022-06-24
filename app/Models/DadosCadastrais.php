@@ -15,7 +15,9 @@ class DadosCadastrais extends Model implements Auditing
 
     protected $table = 'dados_cadastrais';
 
-    protected $guarded = ['cod_smart_unidade'];
+    protected $guarded = ['cod_smart_unidade', 'cod_smart_cliente'];
+
+    public $incrementing = false;
 
     protected $fillable = [
         'cliente',

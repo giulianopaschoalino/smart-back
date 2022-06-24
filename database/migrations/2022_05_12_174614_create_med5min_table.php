@@ -18,10 +18,10 @@ return new class extends Migration
             $table->text('origem')->nullable();
             $table->decimal('dia_num')->nullable();
             $table->integer('minuto')->nullable();
-            $table->numeric('ativa_consumo')->nullable();
-            $table->numeric('ativa_geracao')->nullable();
-            $table->numeric('reativa_consumo')->nullable();
-            $table->numeric('reativa_geracao')->nullable();
+            $table->decimal('ativa_consumo', 30, 10)->nullable();
+            $table->decimal('ativa_geracao', 30, 10)->nullable();
+            $table->decimal('reativa_consumo', 30, 10)->nullable();
+            $table->decimal('reativa_geracao', 30,10)->nullable();
             $table->text('ponto')->nullable();
             $table->timestamps();
             $table->softDeletes();

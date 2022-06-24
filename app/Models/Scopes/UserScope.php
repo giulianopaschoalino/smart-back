@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserScope implements Scope
 {
@@ -27,6 +28,15 @@ class UserScope implements Scope
                 "=",
                 $model->qualifyColumn("cod_smart_unidade"),
             )->where('dados_cadastrais.cod_smart_cliente', '=', $user->client_id);
+
+
+//            $sql = DB::table('dados_cadastrais')
+//                ->select([
+//                    $model->qualifyColumn("cod_smart_unidade")
+//                ])
+//                ->where($model->qualifyColumn("cod_smart_unidade"), '=', $user->client_id);
+//
+//            $builder->whereRaw($sql, 'in', $user->client_id);
         }
     }
 

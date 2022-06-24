@@ -45,7 +45,9 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
-            ->groupBy(['mes', 'dad_estimado'])
+            ->groupBy(['ano', 'dad_estimado'])
+            ->orderBy('ano')
+            ->orderBy('dad_estimado')
             ->get();
     }
 
@@ -63,6 +65,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
             ->groupBy(['mes', 'dad_estimado'])
+            ->orderBy('mes')
+            ->orderBy('dad_estimado')
             ->get();
     }
 
@@ -85,6 +89,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
             ->groupBy(['mes', 'dad_estimado'])
+            ->orderBy('mes')
+            ->orderBy('dad_estimado')
             ->get();
     }
 
@@ -104,6 +110,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
             ->groupBy(['mes', 'dad_estimado'])
+            ->orderBy('mes')
+            ->orderBy('dad_estimado')
             ->get();
 
         return static::checkDate($result);

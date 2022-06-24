@@ -18,11 +18,11 @@ return new class extends Migration
             $table->text('cliente')->nullable();
             $table->text('unidade')->nullable();
             $table->text('codigo_scde')->nullable();
-            $table->numeric('demanda_p')->nullable();
-            $table->numeric('demanda_fp')->nullable();
+            $table->decimal('demanda_p', 30, 10)->nullable();
+            $table->decimal('demanda_fp', 30, 10)->nullable();
             $table->text('status_empresa')->nullable();
             $table->text('status_unidade')->nullable();
-            $table->numeric('data_de_migracao')->nullable();
+            $table->decimal('data_de_migracao', 30, 10)->nullable();
             $table->bigInteger('cod_smart_cliente')->nullable();
             $table->timestamps();
             $table->softDeletes();

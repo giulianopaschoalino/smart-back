@@ -25,7 +25,13 @@ class InfoSectorialController extends Controller
         $data['name'] = Str::of($file->getClientOriginalName())->explode('.')->offsetGet(0);
         $data['uid'] = Str::of($file->hashName())->explode('.')->offsetGet(0);
         $extension = $file->getClientOriginalExtension();
-        $data['path'] = $file->storeAs("pdf",  $data['uid'].".{$extension}");
+        $path = $file->store('pdf','s3');
+
+        dd($path);
+//        $path = Storage::disk('s3')->put('pdf', $data['uid'].".{$extension}");
+//        $path = Storage::disk('s3')->url($path);
+        dd($path);
+        //$data['uid'].".{$extension}"
 
         return InfoSectorial::query()->create($data);
 
