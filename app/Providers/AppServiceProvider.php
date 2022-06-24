@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\AboutUs\AboutUsContractInterface;
+use App\Repositories\AboutUs\AboutUsRepository;
 use App\Repositories\DadosCadastrais\DadosCadastraisContractInterface;
 use App\Repositories\DadosCadastrais\DadosCadastraisRepository;
 use App\Repositories\DadosTe\DadosTeContractInterface;
@@ -60,6 +62,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
           Med5minContractInterface::class,
             Med5minRepository::class
+        );
+        $this->app->bind(
+            AboutUsContractInterface::class,
+            AboutUsRepository::class
         );
     }
 

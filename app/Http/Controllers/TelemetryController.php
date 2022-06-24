@@ -19,9 +19,16 @@ class TelemetryController extends Controller
         protected Med5minContractInterface $med5minContract
     ){}
 
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            $response = $this->med5minContract->search($request->all());
+            return (new TelemetryResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function powerFactor(Request $request)

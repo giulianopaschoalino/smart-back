@@ -44,6 +44,8 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 
     Route::post('updateFile', [\App\Http\Controllers\InfoSectorialController::class, 'updateFile']);
 
+    Route::post('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'store']);
+
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
@@ -58,13 +60,9 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('economy/estimates', [\App\Http\Controllers\EconomyController::class, 'captiveMonthlyEconomy']);
     Route::post('economy/MWh', [\App\Http\Controllers\EconomyController::class, 'costMWhEconomy']);
 
-//    Route::post('telemetry', [\App\Http\Controllers\TelemetryController::class, 'index']);
     Route::post('telemetry/powerFactor', [\App\Http\Controllers\TelemetryController::class, 'powerFactor']);
     Route::post('telemetry/demand', [\App\Http\Controllers\TelemetryController::class, 'demand']);
     Route::post('telemetry/discretization', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
-//    Route::post('telemetry/grossMonthly', [\App\Http\Controllers\TelemetryController::class, 'grossMonthlyEconomy']);
-//    Route::post('telemetry/estimates', [\App\Http\Controllers\TelemetryController::class, 'captiveMonthlyEconomy']);
-//    Route::post('telemetry/MWh', [\App\Http\Controllers\TelemetryController::class, 'costMWhEconomy']);
 
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
@@ -72,6 +70,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 
     Route::post('notify', [\App\Http\Controllers\NotificationController::class, 'notify']);
+
+    Route::get('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'index']);
 });
 
 
