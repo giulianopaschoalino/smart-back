@@ -49,19 +49,18 @@ class TelemetryController extends Controller
         }
     }
 
-    public function discretized15min($params)
+    public function discretization(Request $request)
     {
-
+        try {
+            $response = $this->med5minContract->getDiscretization($request->all());
+            return (new TelemetryResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public function discretizedOneHour($params)
-    {
 
-    }
-
-    public function discretizedOneDay($params)
-    {
-
-    }
 
 }

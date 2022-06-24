@@ -81,6 +81,99 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ->get();
     }
 
+
+    public function getDiscretization($params)
+    {
+        if (empty( $params['type'])){
+           return abort(404, 'Error! The type field needs to be filled in.');
+        }
+
+        $type = $params['type'];
+
+        $params = static::filterRow($params);
+
+        return match ($type) {
+                '5_min'  => $this->getDiscretized5min($params),
+                '15_min' => $this->getDiscretized15min($params),
+                '1_hora' => $this->getDiscretizedOneHour($params),
+                '1_dia'  => $this->getDiscretizedOneDay($params)
+        };
+    }
+
+    public function getDiscretized5min($params)
+    {
+        $fields =
+            [
+                'med_5min.ponto',
+                'med_5min.dia_num',
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("(med_5min.minuto/60) AS hora"),
+                DB::raw("MOD(med_5min.minuto,60) AS minut"),
+                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
+                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+            ];
+
+        return $this->execute($fields, $params)
+            ->groupBy(["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minut'])
+            ->distinct()
+            ->get();
+
+    }
+
+    public function getDiscretized15min($params)
+    {
+        $fields =
+            [
+                'med_5min.ponto',
+                'med_5min.dia_num',
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("(med_5min.minuto/60) AS hora"),
+                DB::raw("((MOD(med_5min.minuto,60)/15)+1)*15 AS minut"),
+                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
+                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+            ];
+
+        return $this->execute($fields, $params)
+            ->groupBy(["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minut'])
+            ->distinct()
+            ->get();
+    }
+
+    public function getDiscretizedOneHour($params)
+    {
+        $fields =
+            [
+                'med_5min.ponto',
+                'med_5min.dia_num',
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("(med_5min.minuto/60) AS hora"),
+                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
+                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+            ];;
+
+        return $this->execute($fields, $params)
+            ->groupBy(["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora'])
+            ->distinct()
+            ->get();
+    }
+
+    public function getDiscretizedOneDay($params)
+    {
+        $fields =
+            [
+                'med_5min.ponto',
+                'med_5min.dia_num',
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
+                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+            ];
+
+        return $this->execute($fields, $params)
+            ->groupBy(["med_5min.ponto", "med_5min.dia_num", "day_formatted"])
+            ->distinct()
+            ->get();
+    }
+
     public static function filterRow($params, $field = 'dia_num'): array
     {
         $arr['filters'] = collect($params['filters'])
@@ -92,49 +185,6 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 return $value;
             })->all();
         return $arr;
-    }
-
-    public function getDiscretized15min($params)
-    {
-        $fields =
-            [
-                'med_5min.ponto',
-                'med_5min.dia_num',
-                DB::raw("(med_5min.minuto/60) AS hora"),
-                DB::raw("((MOD(med_5min.minuto,60)/15)+1)*15 AS minut"),
-                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("UM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
-            ];
-
-        return $this->execute($fields, $params);
-    }
-
-    public function getDiscretizedOneHour($params)
-    {
-        $fields =
-            [
-                'med_5min.ponto',
-                'med_5min.dia_num',
-                DB::raw("(med_5min.minuto/60) AS hora"),
-                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("UM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
-            ];;
-
-        return $this->execute($fields, $params);
-    }
-
-    public function getDiscretizedOneDay($params)
-    {
-        $fields =
-            [
-                'med_5min.ponto',
-                'med_5min.dia_num',
-                DB::raw("(med_5min.minuto/60) AS hora"),
-                DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("UM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
-            ];
-
-        return $this->execute($fields, $params);
     }
 
 }
