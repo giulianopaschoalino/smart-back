@@ -77,10 +77,11 @@ class FilterType
 
     private static function makeBetweenFilter(Builder $builder, FilterItem $filter): Builder
     {
+        $field = ($filter->getRow()) ? DB::raw($filter->getField()) : $filter->getField();
         if ($filter->getType() === "between") {
-            return $builder->whereBetween($filter->getField(), $filter->getValue());
+            return $builder->whereBetween($field, $filter->getValue());
         } elseif ($filter->getType() === "not_between") {
-            return $builder->whereNotBetween($filter->getField(), $filter->getValue());
+            return $builder->whereNotBetween($field, $filter->getValue());
         }
 
         return $builder;
