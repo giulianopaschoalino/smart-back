@@ -51,19 +51,18 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): JsonResponse
     {
         try {
-            $user = $request->all();
-            $user['password'] = bcrypt($request->password);
+            $data = $request->all();
+            $data['password'] = bcrypt($request->password);
 
             if (!$request->hasFile('profile_picture')) {
                 return $this->errorResponse(false, '', 500);
             }
-
             $file = $request->file('profile_picture');
-
             $path = $file->storeAs('avatars', $file->hashName(),'s3');
 
-            $user['profile_picture'] =  Storage::disk('s3')->url($path);
-            $response = $this->user->create($user);
+            $data['profile_picture'] =  Storage::disk('s3')->url($path);
+            $response = $this->user->create($data);
+            $response->roles()->sync($data['role']);
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_CREATED);
