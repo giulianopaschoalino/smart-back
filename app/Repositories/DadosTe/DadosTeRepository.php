@@ -43,8 +43,20 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
             'dados_te.preco_nf',
             'dados_te.nf_c_icms'
         ];
-        
+
         return $this->execute($fields, $params)->get();
     }
 
+    public static function filterRow($params, $field = 'mes'): array
+    {
+        $arr['filters'] = collect($params['filters'])
+            ->map(function ($value, $key) use ($field) {
+                if ($value['field'] === $field) {
+                    Arr::set( $value, "field", "TO_CHAR(TO_DATE(dados_te.{$value['field']}, 'YYMM'), 'MM/YYYY')");
+                    $value['row'] = true;
+                }
+                return $value;
+            })->all();
+        return $arr;
+    }
 }

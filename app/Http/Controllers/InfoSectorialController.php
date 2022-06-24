@@ -25,13 +25,7 @@ class InfoSectorialController extends Controller
         $data['name'] = Str::of($file->getClientOriginalName())->explode('.')->offsetGet(0);
         $data['uid'] = Str::of($file->hashName())->explode('.')->offsetGet(0);
         $extension = $file->getClientOriginalExtension();
-        $path = $file->store('pdf','s3');
-
-        dd($path);
-//        $path = Storage::disk('s3')->put('pdf', $data['uid'].".{$extension}");
-//        $path = Storage::disk('s3')->url($path);
-        dd($path);
-        //$data['uid'].".{$extension}"
+        $data['path'] = $file->storeAs('pdf', $data['uid'].".{$extension}", 's3');
 
         return InfoSectorial::query()->create($data);
 
@@ -43,16 +37,16 @@ class InfoSectorialController extends Controller
 
        $data = InfoSectorial::query()->where('created_at', '=', $created_at)->first();
 
-       if (Storage::disk('public')->exists($data->path))
+       if (!Storage::disk('s3')->exists($data->path))
        {
-           $path = Storage::disk('public')->path(($data->path));
-
-          $heders = [
-               'Content-Type' => mime_content_type($path)
-           ];
-
-           return response()->download($path, $data->name, $heders);
-
+           return $this->errorResponse( false, '', 500);
        }
+
+        $headers = [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'. basename($data->path) .'"',
+        ];
+
+        return response()->make(Storage::disk('s3')->get($data->path), 200, $headers);
     }
 }

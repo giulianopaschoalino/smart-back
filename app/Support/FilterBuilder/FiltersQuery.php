@@ -14,8 +14,7 @@ trait FiltersQuery
 
             $obj = new $className;
 
-            if (!isset($jsonData) && method_exists($obj, 'jsonToObject'))
-            {
+            if (!isset($jsonData) && method_exists($obj, 'jsonToObject')) {
                 throw new Exception("Request inválido");
             }
 
