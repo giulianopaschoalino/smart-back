@@ -60,7 +60,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             "economia.dad_estimado"
         ];
 
-        $test = $this->execute($params, $field)
+        return $this->execute($params, $field)
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
@@ -68,10 +68,6 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy('mes')
             ->orderBy('dad_estimado')
             ->get();
-
-        $t = $this->array_sort_by_column($test, 'mes');
-
-        dd($t);
     }
 
     public function getCaptiveMonthlyEconomy($params)
@@ -160,17 +156,5 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
 
         return $arr;
     }
-
-
-   public function array_sort_by_column(&$array, $column, $direction = SORT_ASC) {
-        $reference_array = array();
-
-        foreach($array as $key => $row) {
-            $reference_array[$key] = $row[$column];
-        }
-
-        return array_multisort($reference_array, $direction, $array);
-    }
-
 
 }

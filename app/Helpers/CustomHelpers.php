@@ -31,3 +31,14 @@ if (!function_exists('stats_standard_deviation')) {
         return sqrt($carry / $n);
     }
 }
+
+if (!function_exists('xmlToObject')) {
+
+    function xmlToObject($link): SimpleXMLElement|bool
+    {
+        if (!$link){
+           abort(500, 'Error.');
+        }
+        return @simplexml_load_string(@file_get_contents($link), 'SimpleXMLElement', LIBXML_NOCDATA);
+    }
+}
