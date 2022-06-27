@@ -163,7 +163,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             $i++;
         }
 
-        return $this->execute($fields, $params)
+        $test = $this->execute($fields, $params)
             ->groupBy('day_formatted', 'day_calc', 'submarket', 'year_month', 'year_month_formatted')
             ->get();
 

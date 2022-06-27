@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function (){
     Route::post('login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
     Route::post('logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
+    Route::post('/forgot-password', \App\Http\Controllers\Auth\ForgotPasswordController::class);
+    Route::post('/reset-password', \App\Http\Controllers\Auth\ResetPasswordController::class);
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
