@@ -59,7 +59,6 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->getConsumptionByDaily($request->all());
-            dd($response);
             return (new PldResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
