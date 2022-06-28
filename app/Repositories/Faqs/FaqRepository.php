@@ -13,13 +13,4 @@ class FaqRepository extends AbstractRepository implements FaqContractInterface
         parent::__construct($faq);
     }
 
-    public function intdex()
-    {
-
-    }
-
-    public function store()
-    {
-
-    }
 }

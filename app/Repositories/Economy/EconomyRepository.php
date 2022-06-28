@@ -10,6 +10,7 @@ use DateInterval;
 use DatePeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -54,13 +55,13 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     public function getGrossMonthlyEconomy($params)
     {
         $field = [
-            DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'MM/YYYY') as mes"),
+            DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
             DB::raw("SUM(economia.economia_acumulada) as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_livre)) as econ_percentual"),
             "economia.dad_estimado"
         ];
 
-        return $this->execute($params, $field)
+        $result = $this->execute($params, $field)
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
@@ -68,6 +69,9 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy('mes')
             ->orderBy('dad_estimado')
             ->get();
+
+         return collect($result)->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "m/Y")))->all();
+
     }
 
     public function getCaptiveMonthlyEconomy($params)
