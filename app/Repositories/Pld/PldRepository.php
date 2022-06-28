@@ -10,6 +10,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use function Symfony\Component\Translation\t;
 
 class PldRepository extends AbstractRepository implements PldContractInterface
 {
@@ -56,10 +57,10 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         $fields = [
             'pld.mes_ref as year_month',
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
-            DB::raw('pld_norte.value as norte'),
-            DB::raw('pld_sul.value as sul'),
-            DB::raw('pld_nordeste.value as nordeste'),
-            DB::raw('pld_sudeste.value as sudeste'),
+            DB::raw("(pld_norte.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as norte"),
+            DB::raw("(pld_sul.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as sul"),
+            DB::raw("(pld_nordeste.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as nordeste"),
+            DB::raw("(pld_sudeste.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as sudeste"),
         ];
 
         $res_max = [];
@@ -75,9 +76,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql, 'norte');
-        $res_max["norte_max"] = $query->max('value');
-        $res_min["norte_min"] = $query->min('value');
-        $desv_pad["norte_desv_pad"] = static::standardDeviation($sql->get()->toArray());
+        $res_max["norte_max"] = static::max($query);
+        $res_min["norte_min"] = static::min($query);
+        $desv_pad["norte_desv_pad"] = static::standardDeviation($sql);
 
         $sql2 = DB::table('pld')
             ->select([
@@ -89,9 +90,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql2, 'sul');
-        $res_max["sul_max"] = $query->max('value');
-        $res_min["sul_min"] = $query->min('value');
-        $desv_pad["sul_desv_pad"] = static::standardDeviation($sql2->get()->toArray());
+        $res_max["sul_max"] = static::max($query);
+        $res_min["sul_min"] = static::min($query);
+        $desv_pad["sul_desv_pad"] = static::standardDeviation($sql2);
 
         $sql3 = DB::table('pld')
             ->select([
@@ -103,9 +104,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql3, 'nordeste');
-        $res_max["nordeste_max"] = $query->max('value');
-        $res_min["nordeste_min"] = $query->min('value');
-        $desv_pad["nordeste_desv_pad"] = static::standardDeviation($sql3->get()->toArray());
+        $res_max["nordeste_max"] = static::max($query);
+        $res_min["nordeste_min"] = static::min($query);
+        $desv_pad["nordeste_desv_pad"] = static::standardDeviation($sql3);
 
         $sql4 = DB::table('pld')
             ->select([
@@ -117,9 +118,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->groupBy('submarket', 'year_month');
 
         $query = DB::table('pld')->fromSub($sql4, 'sudeste');
-        $res_max["sudeste_max"] = $query->max('value');
-        $res_min["sudeste_min"] = $query->min('value');
-        $desv_pad["sudeste_desv_pad"] = static::standardDeviation($sql3->get()->toArray());
+        $res_max["sudeste_max"] = static::max($query);
+        $res_min["sudeste_min"] = static::min($query);
+        $desv_pad["sudeste_desv_pad"] = static::standardDeviation($sql3);
 
         $data = $this->model->select($fields)->joinSub($sql, 'pld_norte', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_norte.year_month');
@@ -163,7 +164,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             $i++;
         }
 
-        $test = $this->execute($fields, $params)
+        return $this->execute($fields, $params)
             ->groupBy('day_formatted', 'day_calc', 'submarket', 'year_month', 'year_month_formatted')
             ->get();
 
@@ -194,9 +195,21 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->get();
     }
 
-    protected static function standardDeviation($array): float|bool
+    protected static function max($query){
+        return $query->max(DB::raw("(value / extract(days FROM DATE_TRUNC('month', TO_DATE(year_month, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24"));
+    }
+
+    protected static function min($query){
+        return $query->max(DB::raw("(value / extract(days FROM DATE_TRUNC('month', TO_DATE(year_month, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24"));
+    }
+
+    protected static function standardDeviation($query): float|bool
     {
-        return stats_standard_deviation(collect($array)->pluck('value')->all());
+        $array = $query->addSelect([
+            DB::raw("(SUM(valor) / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as desv_pad")
+        ])->get()->toArray();
+
+        return stats_standard_deviation(collect($array)->pluck('desv_pad')->all());
     }
 
 }
