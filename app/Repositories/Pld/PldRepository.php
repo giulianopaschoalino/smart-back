@@ -200,7 +200,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     }
 
     protected static function min($query){
-        return $query->max(DB::raw("(value / extract(days FROM DATE_TRUNC('month', TO_DATE(year_month, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24"));
+        return $query->min(DB::raw("(value / extract(days FROM DATE_TRUNC('month', TO_DATE(year_month, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24"));
     }
 
     protected static function standardDeviation($query): float|bool
