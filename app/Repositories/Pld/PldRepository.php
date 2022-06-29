@@ -6,11 +6,11 @@ namespace App\Repositories\Pld;
 
 use App\Models\Pld;
 use App\Repositories\AbstractRepository;
+use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use function Symfony\Component\Translation\t;
 
 class PldRepository extends AbstractRepository implements PldContractInterface
 {
@@ -36,7 +36,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     /**
      * @throws BindingResolutionException
      */
-    public function getOverviewByRegion(): Collection|array
+    public function getOverviewByRegion(): array|Collection
     {
         $fields = [
             'pld.submercado as submarket',
@@ -45,9 +45,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             DB::raw("SUM(pld.valor) as value")
         ];
 
-        // Carbon::now()->format('m/Y')
+
         return $this->execute($fields)
-            ->where(DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY')"), '=', '04/2022')
+            ->where(DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY')"), '=', Carbon::now()->format('m/Y'))
             ->groupBy(['submarket', 'year_month', 'year_month_formatted'])
             ->get();
     }

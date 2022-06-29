@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories\Med5min;
 
 use App\Repositories\ContractInterface;

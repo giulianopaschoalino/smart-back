@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Interface;
 
 interface RepositoryInterfaces
@@ -9,6 +11,5 @@ interface RepositoryInterfaces
     public function find(int $id);
     public function update(array $params, int $id);
     public function delete(int $id);
-    public function selectGlobal($params);
 
 }

@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAboutUsRequest;
 use App\Http\Resources\AboutUsResource;
-use App\Models\AboutUs;
 use App\Repositories\AboutUs\AboutUsContractInterface;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Response;

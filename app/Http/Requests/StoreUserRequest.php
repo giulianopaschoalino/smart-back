@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
+use App\Rules\Uppercase;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
@@ -23,6 +26,9 @@ class StoreUserRequest extends FormRequest
      */
     public function rules()
     {
+//        (new Uppercase());
+//        dd($this->role);
+
         return [
             'name' => 'required|string|max:255|min:3',
             'email' => [
@@ -31,8 +37,9 @@ class StoreUserRequest extends FormRequest
                 "unique:users,email"
             ],
             'password'=> 'required|string|min:6|confirmed',
-            'client_id' => 'nullable',
-            'profile_picture' =>'nullable|image|max:1024'
+            'client_id' => ['nullable'],
+            'profile_picture' =>'nullable|image|max:1024',
+            'role' => ['required', new Uppercase($this->client_id)]
         ];
     }
 }

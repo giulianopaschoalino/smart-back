@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
@@ -9,13 +11,8 @@ use JsonSerializable;
 
 class UserResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  Request  $request
-     * @return array|Arrayable|JsonSerializable
-     */
-    public function toArray($request)
+
+    public function toArray($request): array|JsonSerializable|Arrayable
     {
         return parent::toArray($request);
     }
