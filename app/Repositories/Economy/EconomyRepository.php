@@ -101,7 +101,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     public function getCostMWhEconomy($params)
     {
         $field = [
-            DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'MM/YYYY') as mes"),
+            DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
             DB::raw("SUM(economia.custo_unit) as custo_unit"),
             "economia.dad_estimado"
         ];
@@ -118,7 +118,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy('dad_estimado')
             ->get();
 
-        return static::checkDate($result);
+        return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();;
     }
 
 
@@ -126,9 +126,10 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     {
 
         $year = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
-            ->explode('/')->offsetGet(1)))->unique()->toArray();
+            ->explode('-')->offsetGet(0)))->unique()->toArray();
         $month = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
-            ->explode('/')->offsetGet(0)))->unique()->toArray();
+            ->explode('-')->offsetGet(1)))->unique()->toArray();
+
         $month_stat = end($month);
         $date_stat = current($year);
         $date_end = end($year);
@@ -141,7 +142,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
 
         $date = [];
         foreach ($daterange as $date1) {
-            $date[] = $date1->format('m/Y');
+            $date[] = $date1->format('Y-m'.'-01');
         }
 
         $arr = collect($value)->toArray();
@@ -153,8 +154,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
         }
 
         usort($arr, function ($a, $b, $i = 'mes') {
-            $t1 = strtotime(str_replace('/', '-', $a[$i]));
-            $t2 = strtotime(str_replace('/', '-', $b[$i]));
+            $t1 = strtotime($a[$i]);
+            $t2 = strtotime($b[$i]);
             return $t1 - $t2;
         });
 
