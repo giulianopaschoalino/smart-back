@@ -34,16 +34,12 @@ class ResetPasswordController extends Controller
             ])->delete();
 
             $user = User::with('roles')->firstWhere('email', $resetPasswordRequest->email);
-            $role = $user->roles()->first();
 
             $user->update([
                 'password' => Hash::make($resetPasswordRequest->password)
             ]);
 
-            $token = $user->first()->createToken('API Token', [$role->name]);
-
             return $this->successResponse([
-                'token' => $token->plainTextToken,
                 'user' => $user
             ],
                 "You can now reset your password",
