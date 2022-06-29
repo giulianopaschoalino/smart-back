@@ -37,7 +37,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     {
         $field = [
             DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') as ano"),
-            DB::raw("SUM(economia.economia_acumulada) as economia_acumulada"),
+            DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_livre)) as econ_percentual"),
             "economia.dad_estimado"
         ];
@@ -56,7 +56,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     {
         $field = [
             DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
-            DB::raw("SUM(economia.economia_acumulada) as economia_acumulada"),
+            DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_livre)) as econ_percentual"),
             "economia.dad_estimado"
         ];
