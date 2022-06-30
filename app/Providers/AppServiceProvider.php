@@ -20,6 +20,7 @@ use App\Repositories\Pld\PldContractInterface;
 use App\Repositories\Pld\PldRepository;
 use App\Repositories\Users\UserContractInterface;
 use App\Repositories\Users\UserRepository;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -76,6 +77,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        setlocale(LC_TIME, 'pt_BR');
     }
 }
