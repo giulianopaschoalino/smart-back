@@ -64,7 +64,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("(med_5min.minuto/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS dem_reg"),
                 DB::raw("(CASE WHEN ((med_5min.minuto/60) >= 18 AND (med_5min.minuto/60) <= 21) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
-        ];
+            ];
 
         $params = static::filterRow($params);
 
@@ -83,8 +83,8 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
     public function getDiscretization($params)
     {
-        if (empty( $params['type'])){
-           return abort(404, 'Error! The type field needs to be filled in.');
+        if (empty($params['type'])) {
+            return abort(404, 'Error! The type field needs to be filled in.');
         }
 
         $type = $params['type'];
@@ -92,10 +92,11 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         $params = static::filterRow($params);
 
         return match ($type) {
-                '5_min'  => $this->getDiscretized5min($params),
-                '15_min' => $this->getDiscretized15min($params),
-                '1_hora' => $this->getDiscretizedOneHour($params),
-                '1_dia'  => $this->getDiscretizedOneDay($params)
+            '5_min' => $this->getDiscretized5min($params),
+            '15_min' => $this->getDiscretized15min($params),
+            '1_hora' => $this->getDiscretizedOneHour($params),
+            '1_dia' => $this->getDiscretizedOneDay($params),
+            '1_mes' => $this->getDiscretizedOneMonth($params)
         };
     }
 
@@ -171,6 +172,38 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ->groupBy(["med_5min.ponto", "med_5min.dia_num", "day_formatted"])
             ->distinct()
             ->get();
+    }
+
+    public function getDiscretizedOneMonth($params): Collection|array
+    {
+        $fields =
+            [
+                'med_5min.ponto',
+                DB::raw("(
+                    med_5min.dia_num::INTEGER - extract(day from (
+                        (date('1899-12-30') + interval '1' day * med_5min.dia_num)
+                        -
+                        to_date(
+                            concat(
+                                extract( YEAR from date '1899-12-31' + cast (med_5min.dia_num as integer)), 
+                                '/',
+                                extract( month from date '1899-12-31' + cast (med_5min.dia_num as integer))
+                            ), 
+                            'YYYY/MM'
+                        )
+                    ))
+	            ) as dia_data"),
+                DB::raw("1 as hora"),
+                DB::raw("1 as minuto"),
+                DB::raw("SUM(med_5min.ativa_consumo) As consumo"),
+                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) As reativa")
+            ];
+
+        return $this->execute($fields, $params)
+            ->groupBy(["med_5min.dia_num", "med_5min.ponto"])
+            ->orderBy(DB::raw("med_5min.dia_num, med_5min.ponto"))
+            ->get();
+
     }
 
     public static function filterRow($params, $field = 'dia_num'): array
