@@ -39,7 +39,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 "med_5min.dia_num",
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa"),
-                DB::raw("(SUM(med_5min.ativa_consumo)/(SUM(med_5min.ativa_consumo)^2 +SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2)) as FP"),
+                DB::raw("(SUM(med_5min.ativa_consumo)/(SUM(med_5min.ativa_consumo)^2 +SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2))*1000 as FP"),
                 DB::raw("0.92 as F_ref")
             ];
 
