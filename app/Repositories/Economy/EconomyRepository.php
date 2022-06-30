@@ -70,7 +70,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy('dad_estimado')
             ->get();
 
-         return collect($result)->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "m/Y")))->all();
+         return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();
 
     }
 
@@ -118,7 +118,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy('dad_estimado')
             ->get();
 
-        return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();;
+        return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();
     }
 
 
