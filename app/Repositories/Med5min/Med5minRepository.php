@@ -37,18 +37,17 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 "med_5min.ponto",
                 "med_5min.dia_num",
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
-                DB::raw("(med_5min.minuto/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa"),
-                DB::raw("(SUM(med_5min.ativa_consumo) / NULLIF(( (SUM(med_5min.ativa_consumo)^2) + (SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2) ), 0))*100 as FP"),
+                DB::raw("(SUM(med_5min.ativa_consumo)/(SUM(med_5min.ativa_consumo)^2 +SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2)) as FP"),
                 DB::raw("0.92 as F_ref")
             ];
 
         $params = static::filterRow($params);
 
         return $this->execute($fields, $params)
-            ->groupBy(["med_5min.minuto", "med_5min.ponto", "med_5min.dia_num"])
+            ->groupBy(["med_5min.dia_num", "med_5min.ponto"])
+            ->orderBy(DB::raw("med_5min.dia_num, med_5min.ponto"))
             ->distinct()
             ->get();
 
@@ -61,7 +60,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 "med_5min.ponto",
                 "med_5min.dia_num",
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("(med_5min.minuto/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS dem_reg"),
                 DB::raw("(CASE WHEN ((med_5min.minuto/60) >= 18 AND (med_5min.minuto/60) <= 21) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
@@ -106,7 +105,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("(med_5min.minuto/60) AS hora"),
                 DB::raw("MOD(med_5min.minuto,60) AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
@@ -126,7 +125,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("(med_5min.minuto/60) AS hora"),
                 DB::raw("((MOD(med_5min.minuto,60)/15)+1)*15 AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
@@ -145,7 +144,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("(med_5min.minuto/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
@@ -163,7 +162,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
@@ -179,7 +178,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         $arr['filters'] = collect($params['filters'])
             ->map(function ($value) use ($field) {
                 if ($value['field'] === $field) {
-                    Arr::set($value, "field", "(date('1899-12-30') + interval '1' DAY * med_5min.{$value['field']})");
+                    Arr::set($value, "field", "(date('1899-12-31') + interval '1' DAY * med_5min.{$value['field']})");
                     $value['row'] = true;
                 }
                 return $value;

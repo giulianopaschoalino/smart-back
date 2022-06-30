@@ -148,8 +148,8 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     public function getConsumptionByDaily($params, $field = "mes_ref"): Collection|array
     {
         $fields = [
-            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
-            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
+            DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
+            DB::raw("(date('1899-12-31') + interval '1' day * pld.dia_num) as day_calc"),
             'pld.submercado as submarket',
             DB::raw("SUM(pld.valor) as value"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
@@ -173,9 +173,9 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     public function getConsumptionBySchedule($params, $field = "dia_num"): Collection|array
     {
         $fields = [
-            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
+            DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
             'hora as hour',
-            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
+            DB::raw("(date('1899-12-31') + interval '1' day * pld.dia_num) as day_calc"),
             'pld.submercado as submarket',
             DB::raw("SUM(pld.valor) as value"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
@@ -185,7 +185,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         $i = 0;
         foreach ($params['filters'] as $param) {
             if ($param['field'] === $field) {
-                $params['filters'][$i]['field'] = "(date('1899-12-30') + interval '1' day * pld.{$param['field']})";
+                $params['filters'][$i]['field'] = "(date('1899-12-31') + interval '1' day * pld.{$param['field']})";
             }
             $i++;
         }
