@@ -37,12 +37,12 @@ class AuthController extends Controller
         $requestToken = $request->header('authorization');
 
         $token = (new PersonalAccessToken())
-            ->findToken(str_replace('Bearer ','', $requestToken));
+            ->findToken(substr($requestToken, 10, strlen($requestToken)));
 
-       $token->delete();
+        $token->delete();
 
-       return response()->json([
-           'message' => 'Roken Revoked.'
-       ], 200);
+        return response()->json([
+            'message' => 'Roken Revoked.'
+        ], 200);
     }
 }

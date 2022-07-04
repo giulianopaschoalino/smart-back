@@ -33,6 +33,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('units', [\App\Http\Controllers\ClientController::class, 'index']);
 
     Route::get('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'index']);
+
+    Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
@@ -70,8 +72,6 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
 
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
-
-    Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 
     Route::post('notify', [\App\Http\Controllers\NotificationController::class, 'notify']);
 
