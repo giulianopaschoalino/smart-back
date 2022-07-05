@@ -34,7 +34,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
 
 
     /**
-     * @throws BindingResolutionException
+     * Geral por Região
      */
     public function getOverviewByRegion(): array|Collection
     {
@@ -42,7 +42,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             'pld.submercado as submarket',
             'pld.mes_ref as year_month',
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
-            DB::raw("SUM(pld.valor) as value")
+            DB::raw("AVG(pld.valor) as value")
         ];
 
 
@@ -52,6 +52,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->get();
     }
 
+    /** Tabela de Consumo */
     public function getListConsumption($params): Collection|array
     {
         $fields = [
@@ -144,6 +145,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
 
     /**
      * @throws BindingResolutionException
+     *  PLD, Valores Diários
      */
     public function getConsumptionByDaily($params, $field = "mes_ref"): Collection|array
     {
@@ -151,7 +153,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
             DB::raw("(date('1899-12-31') + interval '1' day * pld.dia_num) as day_calc"),
             'pld.submercado as submarket',
-            DB::raw("SUM(pld.valor) as value"),
+            DB::raw("AVG(pld.valor) as value"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
         ];
@@ -177,7 +179,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             'hora as hour',
             DB::raw("(date('1899-12-31') + interval '1' day * pld.dia_num) as day_calc"),
             'pld.submercado as submarket',
-            DB::raw("SUM(pld.valor) as value"),
+            'pld.valor as value',
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
         ];
@@ -185,13 +187,13 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         $i = 0;
         foreach ($params['filters'] as $param) {
             if ($param['field'] === $field) {
-                $params['filters'][$i]['field'] = "(date('1899-12-31') + interval '1' day * pld.{$param['field']})";
+                $params['filters'][$i]['field'] = "(date('1899-12-30') + interval '1' day * pld.{$param['field']})";
             }
             $i++;
         }
 
         return $this->execute($fields, $params)
-            ->groupBy('day_formatted', 'hour', 'day_calc', 'submarket', 'year_month', 'year_month_formatted')
+            ->orderBy('hour',  'asc')
             ->get();
     }
 

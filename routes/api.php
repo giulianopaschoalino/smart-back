@@ -55,10 +55,11 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
-    Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']);
-    Route::post('pld/list', [\App\Http\Controllers\PldController::class, 'listConsumption']);
-    Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']);
-    Route::post('pld/schedule', [\App\Http\Controllers\PldController::class, 'consumptionBySchedule']);
+
+    Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']); //Visão Geral por Região
+    Route::post('pld/list', [\App\Http\Controllers\PldController::class, 'listConsumption']); // Tabela de Consumo
+    Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']); // Consumo por Diário
+    Route::post('pld/schedule', [\App\Http\Controllers\PldController::class, 'consumptionBySchedule']); // Consumo por Horários
 
     Route::post('economy', [\App\Http\Controllers\EconomyController::class, 'index']);
     Route::post('economy/grossAnnual', [\App\Http\Controllers\EconomyController::class, 'grossAnnualEconomy']);
@@ -70,7 +71,7 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('telemetry/demand', [\App\Http\Controllers\TelemetryController::class, 'demand']);
     Route::post('telemetry/discretization', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
 
-    Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']);
+    Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']); // Resumo Operações
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 
     Route::post('notify', [\App\Http\Controllers\NotificationController::class, 'notify']);

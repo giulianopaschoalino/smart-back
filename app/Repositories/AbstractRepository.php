@@ -16,6 +16,8 @@ abstract class AbstractRepository
 
     protected AbstractRepository|Model $model;
 
+    protected $item;
+
     /**
      * @throws BindingResolutionException
      */
@@ -24,20 +26,9 @@ abstract class AbstractRepository
         $this->model = $model ?? $this::resolveModel();
     }
 
-    public function __call($name, $arguments)
+    public function filterBuilder($params): void
     {
-        $result = $this->forwardCallTo($this->model, $name, $arguments);
-
-        if ($result === $this->model) {
-            return $this;
-        }
-
-        return $result;
-    }
-
-    public function __get($name)
-    {
-        return $this->model->{$name};
+        $this->item = static::getFilterBuilder($params);
     }
 
     /**
@@ -55,5 +46,22 @@ abstract class AbstractRepository
         }
 
         return (new static)->$model;
+    }
+
+    public function __call($name, $arguments)
+    {
+        $result = $this->forwardCallTo($this->model, $name, $arguments);
+
+        if ($result === $this->model) {
+            return $this;
+        }
+
+        return $result;
+    }
+
+
+    public function __get($name)
+    {
+        return $this->model->{$name};
     }
 }

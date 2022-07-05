@@ -33,6 +33,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
         return $query;
     }
 
+    /* Economia bruta anual */
     public function getGrossAnnualEconomy($params): Collection|array
     {
         $field = [
@@ -52,11 +53,12 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->get();
     }
 
+    /* Economia bruta mensal */
     public function getGrossMonthlyEconomy($params)
     {
         $field = [
             DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
-            DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
+            DB::raw("SUM(economia.economia_acumulada) as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_livre)) as econ_percentual"),
             "economia.dad_estimado"
         ];
@@ -66,14 +68,14 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
             ->groupBy(['mes', 'dad_estimado'])
-            ->orderBy('mes')
-            ->orderBy('dad_estimado')
+            ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
 
          return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();
 
     }
 
+    /*  cativo x livre mensal*/
     public function getCaptiveMonthlyEconomy($params)
     {
         $field = [
@@ -93,11 +95,11 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
             ->groupBy(['mes', 'dad_estimado'])
-            ->orderBy('mes')
-            ->orderBy('dad_estimado')
+            ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
     }
 
+    /* Indicador de custo R$/MWh */
     public function getCostMWhEconomy($params)
     {
         $field = [
@@ -114,8 +116,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
             ->groupBy(['mes', 'dad_estimado'])
-            ->orderBy('mes')
-            ->orderBy('dad_estimado')
+            ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
 
         return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();

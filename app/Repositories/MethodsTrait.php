@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 trait MethodsTrait
 {
@@ -40,20 +43,23 @@ trait MethodsTrait
     }
 
 
-    public function search($params)
+    /**
+     * @throws BindingResolutionException
+     */
+    public function search($params, $rowField = false)
     {
-        $filter = static::getFilterBuilder($params);
+        $this->filterBuilder($params);
 
-        $filter->setFields(collect($filter->getFields())->transform(fn($value) => $this->model->qualifyColumn($value))->all());
+        $fields = $this->item->applyField();
 
-        $query = $this->model->select($filter->getFields());
+        $query = $this->model->select($fields);
 
-        $response = $filter->applyFilter($query);
+        $response = $this->item->applyFilter($query);
 
-        if ($filter->isDistinct()){
+        if ($this->item->isDistinct()){
             $response = $response->distinct();
         }
 
-        return $response->get();
+       return $response->get();
     }
 }

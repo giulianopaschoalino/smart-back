@@ -42,3 +42,16 @@ if (!function_exists('xmlToObject')) {
         return @simplexml_load_string(@file_get_contents($link), 'SimpleXMLElement', LIBXML_NOCDATA);
     }
 }
+
+
+if ('format_date_sql'){
+
+    function format_date_sql($params, $model)
+    {
+        foreach ($params->getFields() as $param) {
+            $params->setFields(["TO_CHAR(TO_DATE({$model->qualifyColumn($param)}, 'YYMM'), 'MM/YYYY')"]);
+        }
+        return $params;
+    }
+
+}
