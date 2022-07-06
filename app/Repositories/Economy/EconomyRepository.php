@@ -64,6 +64,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
         ];
 
         $result = $this->execute($params, $field)
+            ->where('dados_cadastrais.codigo_scde', '!=', '0P')
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-01'), 'YYYY-MM-DD') - interval '1' year"))
@@ -72,7 +73,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->havingRaw("sum(custo_livre) > 0")
             ->get();
 
-        return collect(static::checkDate($result))
+        return collect($result)
             ->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))
             ->all();
 
