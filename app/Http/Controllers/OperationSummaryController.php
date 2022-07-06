@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use App\Http\Resources\OperationSummaryResource;
 use App\Repositories\DadosTe\DadosTeContractInterface;
 use App\Traits\ApiResponse;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -24,6 +26,7 @@ class OperationSummaryController extends Controller
     {
         try {
             $response = $this->dadosTeContract->search($request->all(), true);
+            $response = Helpers::orderByDate($response);
             return (new OperationSummaryResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);

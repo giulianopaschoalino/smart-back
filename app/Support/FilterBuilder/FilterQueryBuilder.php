@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Support\FilterBuilder;
 
-use App\Support\FilterBuilder\Entity\FieldItem;
 use App\Support\FilterBuilder\Entity\FilterItem;
 use App\Support\FilterBuilder\Entity\OrderItem;
 use App\Support\FilterBuilder\Interfaces\IFilterBuilder;
@@ -50,30 +49,6 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
         return $builder;
     }
 
-
-    public function applyField($fields = [])
-    {
-        if (!empty($this->getFields())) {
-            foreach ($this->getFields() as $field)
-            {
-                $fields[] = FieldType::field($field);
-            }
-        }
-        return $fields;
-    }
-
-
-    /**
-     */
-    public function format_date_sql(): static
-    {
-        foreach ($this->getFields() as $param) {
-            $this->setFields([DB::raw("TO_CHAR(TO_DATE({$param}, 'YYMM'), 'MM/YYYY') as {$param}")]);
-        }
-        return $this;
-    }
-
-
     /**
      * @return array
      */
@@ -87,7 +62,7 @@ class FilterQueryBuilder extends EntityJson implements IFilterBuilder
      */
     public function setFields(array $fields): void
     {
-        $this->fields = $this->arrayObjectCast($fields, FieldItem::class);
+        $this->fields = $fields;
     }
 
     /**

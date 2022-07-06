@@ -43,14 +43,15 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             "economia.dad_estimado"
         ];
 
-        return $this->execute($params, $field)
+        DB::enableQueryLog();
+         $this->execute($params, $field)
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
             ->groupBy(['ano', 'dad_estimado'])
-            ->orderBy('ano')
-            ->orderBy('dad_estimado')
+            ->orderBy(DB::raw("ano, dad_estimado"))
             ->get();
+        dd(DB::getQueryLog());
     }
 
     /* Economia bruta mensal */
@@ -58,7 +59,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     {
         $field = [
             DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
-            DB::raw("SUM(economia.economia_acumulada) as economia_acumulada"),
+            DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_livre)) as econ_percentual"),
             "economia.dad_estimado"
         ];
@@ -80,9 +81,9 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     {
         $field = [
             DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'MM/YYYY') as mes"),
-            DB::raw("SUM(economia.custo_cativo) as custo_cativo"),
-            DB::raw("SUM(economia.custo_livre) as custo_livre"),
-            DB::raw("SUM(economia.economia_mensal) as economia_mensal"),
+            DB::raw("SUM(economia.custo_cativo)/1000 as custo_cativo"),
+            DB::raw("SUM(economia.custo_livre)/1000  as custo_livre"),
+            DB::raw("SUM(economia.economia_mensal)/1000 as economia_mensal"),
             DB::raw("(SUM(economia_mensal)/SUM(custo_livre)) as econ_percentual"),
             "economia.dad_estimado"
         ];

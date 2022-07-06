@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Pld;
 
+use App\Helpers\Helpers;
 use App\Models\Pld;
 use App\Repositories\AbstractRepository;
 use Carbon\Carbon;
@@ -71,7 +72,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->select([
                 'submercado as submarket',
                 'mes_ref as year_month',
-                DB::raw('SUM(valor) as value'),
+                DB::raw('AVG(valor) as value'),
             ])
             ->where('pld.submercado', '=', 'NORTE')
             ->groupBy('submarket', 'year_month');
@@ -85,7 +86,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->select([
                 'submercado as submarket',
                 'mes_ref as year_month',
-                DB::raw('SUM(valor) as value')
+                DB::raw('AVG(valor) as value')
             ])
             ->where('pld.submercado', '=', 'SUL')
             ->groupBy('submarket', 'year_month');
@@ -99,7 +100,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->select([
                 'submercado as submarket',
                 'mes_ref as year_month',
-                DB::raw('SUM(valor) as value')
+                DB::raw('AVG(valor) as value')
             ])
             ->where('pld.submercado', '=', 'NORDESTE')
             ->groupBy('submarket', 'year_month');
@@ -113,7 +114,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             ->select([
                 'submercado as submarket',
                 'mes_ref as year_month',
-                DB::raw('SUM(valor) as value')
+                DB::raw('AVG(valor) as value')
             ])
             ->where('pld.submercado', '=', 'SUDESTE')
             ->groupBy('submarket', 'year_month');
@@ -131,7 +132,11 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             $join->on('pld.mes_ref', '=', 'pld_nordeste.year_month');
         })->joinSub($sql4, 'pld_sudeste', function ($join) {
             $join->on('pld.mes_ref', '=', 'pld_sudeste.year_month');
-        })->distinct()->get();
+        })
+            ->whereRaw("TO_DATE(pld.mes_ref, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '1' year")
+            ->orderBy('year_month', 'DESC')
+            ->distinct()
+            ->get();
 
         return [
             'data' => $data,
@@ -150,8 +155,8 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     public function getConsumptionByDaily($params, $field = "mes_ref"): Collection|array
     {
         $fields = [
-            DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
-            DB::raw("(date('1899-12-31') + interval '1' day * pld.dia_num) as day_calc"),
+            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
+            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
             'pld.submercado as submarket',
             DB::raw("AVG(pld.valor) as value"),
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),

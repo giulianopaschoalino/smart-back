@@ -5,6 +5,7 @@ namespace App\Helpers;
 
 use DateInterval;
 use DatePeriod;
+use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -20,9 +21,9 @@ class Helpers
         return $result;
     }
 
-    public static function orderByDate($result): array
+    public static function orderByDate($result, $field = 'mes'): array
     {
-        return collect($result)->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();
+        return collect($result)->transform(fn($value) => Arr::set($value, $field, DateTime::createFromFormat('ym',$value['mes'])->format('m/Y')))->all();
     }
 
     public static function checkDate($value): array

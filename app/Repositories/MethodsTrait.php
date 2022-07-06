@@ -6,8 +6,6 @@ namespace App\Repositories;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 
 trait MethodsTrait
 {
@@ -50,7 +48,7 @@ trait MethodsTrait
     {
         $this->filterBuilder($params);
 
-        $fields = $this->item->applyField();
+        $fields = $this->item->getFields();
 
         $query = $this->model->select($fields);
 
