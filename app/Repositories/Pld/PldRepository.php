@@ -59,10 +59,10 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         $fields = [
             'pld.mes_ref as year_month',
             DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
-            DB::raw("(pld_norte.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as norte"),
-            DB::raw("(pld_sul.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as sul"),
-            DB::raw("(pld_nordeste.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as nordeste"),
-            DB::raw("(pld_sudeste.value / extract(days FROM DATE_TRUNC('month', TO_DATE(mes_ref, 'YYMM')::timestamptz) + interval '1 month - 1 day'))/24 as sudeste"),
+            DB::raw("pld_norte.value as norte"),
+            DB::raw("pld_sul.value as sul"),
+            DB::raw("pld_nordeste.value as nordeste"),
+            DB::raw("pld_sudeste.value as sudeste"),
         ];
 
         $res_max = [];
