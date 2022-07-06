@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\DadosTe;
 
+use App\Helpers\Helpers;
 use App\Models\DadosTe;
 use App\Repositories\AbstractRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,7 +35,7 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
     public function getOperationSummary($params): Collection|array
     {
         $fields = [
-            DB::raw("TO_CHAR(TO_DATE(dados_te.mes, 'YYMM'), 'MM/YYYY') as mes"),
+            "dados_te.mes",
             'dados_te.cod_smart_unidade',
             'dados_te.operacao',
             'dados_te.tipo',
@@ -44,7 +45,12 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
             'dados_te.nf_c_icms'
         ];
 
-        return $this->execute($fields, $params)->get();
+        $result = $this->execute($fields, $params)
+            ->whereRaw("TO_DATE(dados_te.mes, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '1' year")
+            ->orderBy('mes', 'DESC')
+            ->get();
+
+        return Helpers::orderByDate($result);
     }
 
     public static function filterRow($params, $field = 'mes'): array
