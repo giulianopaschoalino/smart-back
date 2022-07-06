@@ -97,6 +97,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                     DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"),
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
+            ->whereRaw("TO_DATE(economia.mes, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '0' year")
             ->groupBy(['mes', 'dad_estimado'])
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
