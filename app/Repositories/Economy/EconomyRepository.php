@@ -43,15 +43,14 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             "economia.dad_estimado"
         ];
 
-        DB::enableQueryLog();
-         $this->execute($params, $field)
+
+        return $this->execute($params, $field)
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"))
             ->groupBy(['ano', 'dad_estimado'])
             ->orderBy(DB::raw("ano, dad_estimado"))
             ->get();
-        dd(DB::getQueryLog());
     }
 
     /* Economia bruta mensal */
@@ -72,7 +71,10 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
 
-         return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();
+        return collect(static::checkDate($result))
+            ->transform(fn($value)
+            => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))
+            ->all();
 
     }
 
@@ -120,7 +122,10 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
 
-        return collect(static::checkDate($result))->transform(fn($value) => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))->all();
+        return collect(static::checkDate($result))
+            ->transform(fn($value)
+            => Arr::set($value, 'mes', date_format(date_create($value['mes']), "M/Y")))
+            ->all();
     }
 
 
@@ -144,7 +149,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
 
         $date = [];
         foreach ($daterange as $date1) {
-            $date[] = $date1->format('Y-m'.'-01');
+            $date[] = $date1->format('Y-m' . '-01');
         }
 
         $arr = collect($value)->toArray();
