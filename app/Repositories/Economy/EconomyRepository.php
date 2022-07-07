@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Economy;
 
+use App\Helpers\Helpers;
 use App\Models\Economy;
 use App\Repositories\AbstractRepository;
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,16 +84,17 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     /*  cativo x livre mensal*/
     public function getCaptiveMonthlyEconomy($params): Collection|array
     {
+
         $field = [
-            DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'MM/YYYY') as mes"),
+            "economia.mes",
             DB::raw("SUM(economia.custo_cativo)/1000 as custo_cativo"),
             DB::raw("SUM(economia.custo_livre)/1000 as custo_livre"),
             DB::raw("SUM(economia.economia_mensal)/1000 as economia_mensal"),
-            DB::raw("(SUM(economia_mensal)/SUM(custo_livre)) as econ_percentual"),
+            DB::raw("(SUM(economia_mensal)/SUM(custo_cativo)) as econ_percentual"),
             "economia.dad_estimado"
         ];
 
-        return $this->execute($params, $field)
+        $result = $this->execute($params, $field)
             ->where('dados_cadastrais.codigo_scde', '!=', '0P')
             ->whereBetween(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
@@ -104,6 +107,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->havingRaw("sum(custo_livre) > 0")
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
+
+        return Helpers::orderByDate($result);
     }
 
     /* Indicador de custo R$/MWh */

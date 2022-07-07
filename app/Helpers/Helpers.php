@@ -3,6 +3,7 @@
 
 namespace App\Helpers;
 
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -14,8 +15,7 @@ class Helpers
     public static function uploadFiles($params, $field): ?string
     {
         $result = null;
-        if ($params->hasFile($field))
-        {
+        if ($params->hasFile($field)) {
             $result = url('storage') . '/' . $params->file($field)->store('users');
         }
         return $result;
@@ -23,7 +23,13 @@ class Helpers
 
     public static function orderByDate($result, $field = 'mes'): array
     {
-        return collect($result)->transform(fn($value) => Arr::set($value, $field, DateTime::createFromFormat('ym',$value['mes'])->format('m/Y')))->all();
+        return collect($result)
+            ->transform(fn($value) => Arr::set(
+                $value,
+                $field,
+                Carbon::createFromFormat('ym', $value['mes'])
+                    ->translatedFormat('M/Y')))
+            ->all();
     }
 
     public static function checkDate($value): array
@@ -46,7 +52,7 @@ class Helpers
 
         $date = [];
         foreach ($daterange as $date1) {
-            $date[] = $date1->format('Y-m'.'-01');
+            $date[] = $date1->format('Y-m' . '-01');
         }
 
         $arr = collect($value)->toArray();
