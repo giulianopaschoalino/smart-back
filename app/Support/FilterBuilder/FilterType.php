@@ -36,6 +36,7 @@ class FilterType
         "not_null"
     ];
 
+
     public static function filter(Builder $builder, FilterItem $filter): Builder
     {
 
@@ -61,7 +62,19 @@ class FilterType
         if ($fType === 'not_like') {
             $fType = 'not like';
         }
+
+        if ($filter->getInterval())
+        {
+            $filter->setField("TO_DATE({$filter->getField()}, 'YYMM')");
+            $filter->setValue(DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL 
+            '{$filter->getValue()}' {$filter->getInterval()}"));
+            $filter->setRow(true);
+
+        }
+
         $field = ($filter->getRow()) ? DB::raw($filter->getField()) : $filter->getField();
+
+
         return $builder->where($field, $fType, $filter->getValue());
 
     }
