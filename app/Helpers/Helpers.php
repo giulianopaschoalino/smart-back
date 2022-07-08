@@ -27,7 +27,7 @@ class Helpers
             ->transform(fn($value) => Arr::set(
                 $value,
                 $field,
-                Carbon::createFromFormat('ym', $value['mes'])
+                Carbon::createFromFormat('ym', $value['mes'])->locale('pt-BR')
                     ->translatedFormat('M/Y')))
             ->all();
     }

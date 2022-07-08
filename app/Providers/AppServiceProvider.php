@@ -32,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+
+        setlocale(LC_TIME,  config('app.locale'), 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+
         $this->app->bind(
             UserContractInterface::class,
             UserRepository::class
@@ -78,6 +81,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         setlocale(LC_TIME,  config('app.locale'), 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
-        date_default_timezone_set('America/Sao_Paulo');
     }
 }
