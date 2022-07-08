@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use App\Http\Resources\PldResource;
 use App\Repositories\Pld\PldContractInterface;
 use App\Traits\ApiResponse;
@@ -23,6 +24,7 @@ class PldController extends Controller
     {
         try {
             $response = $this->pldContract->search($request->all());
+            $response = Helpers::orderByDate($response, 'm/Y', 'mes_ref');
             return (new PldResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
