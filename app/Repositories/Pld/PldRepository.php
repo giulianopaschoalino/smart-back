@@ -154,12 +154,12 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     public function getConsumptionByDaily($params, $field = "mes_ref"): Collection|array
     {
         $fields = [
-            DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * pld.dia_num), 'DD') as day_formatted"),
-            DB::raw("(date('1899-12-30') + interval '1' day * pld.dia_num) as day_calc"),
+            DB::raw("to_char(('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision)), 'DD'::text) AS day_formatted"),
+            DB::raw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision)) as day_calc"),
             'pld.submercado as submarket',
             DB::raw("AVG(pld.valor) as value"),
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month"),
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') as year_month_formatted"),
+            DB::raw("pld.mes_ref as year_month"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'::text)::timestamp with time zone, 'MM/YYYY'::text) as year_month_formatted"),
         ];
 
         $i = 0;
@@ -171,7 +171,14 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         }
 
         return $this->execute($fields, $params)
-            ->groupBy('day_formatted', 'day_calc', 'submarket', 'year_month', 'year_month_formatted')
+            ->groupBy(
+                DB::raw("(to_char(('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision)), 'DD'::text))"),
+                DB::raw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision))"),
+                "pld.submercado",
+                "pld.mes_ref",
+                DB::raw("(to_char((to_date(pld.mes_ref, 'YYMM'::text))::timestamp with time zone, 'MM/YYYY'::text))")
+            )
+            ->orderByRaw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision))")
             ->get();
 
     }
@@ -197,6 +204,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
         }
 
         return $this->execute($fields, $params)
+            ->whereRaw("TO_DATE(pld.mes_ref, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '1' year")
             ->orderBy('hour',  'asc')
             ->get();
     }
