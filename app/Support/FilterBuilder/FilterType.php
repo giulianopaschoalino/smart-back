@@ -63,7 +63,7 @@ class FilterType
             $fType = 'not like';
         }
 
-        if ($filter->getInterval())
+        if (!empty($filter->getInterval()))
         {
             $filter->setField("TO_DATE({$filter->getField()}, 'YYMM')");
             $filter->setValue(DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL 

@@ -34,7 +34,7 @@ class FilterItem extends EntityJson
     /**
      * @var string
      */
-    protected string $interval;
+    protected string $interval = '';
 
     /**
      * @return bool
