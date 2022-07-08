@@ -21,14 +21,14 @@ class Helpers
         return $result;
     }
 
-    public static function orderByDate($result, $field = 'mes'): array
+    public static function orderByDate($result, $format ='M/Y',  $field = 'mes'): array
     {
         return collect($result)
             ->transform(fn($value) => Arr::set(
                 $value,
                 $field,
                 Carbon::createFromFormat('ym', $value['mes'])->locale('pt-BR')
-                    ->translatedFormat('M/Y')))
+                    ->translatedFormat($format)))
             ->all();
     }
 

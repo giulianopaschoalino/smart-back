@@ -45,6 +45,8 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
             'dados_te.nf_c_icms'
         ];
 
+        $params = static::filterRow($params);
+
         $result = $this->execute($fields, $params)
             ->whereRaw("TO_DATE(dados_te.mes, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '1' year")
             ->orderBy('mes', 'DESC')

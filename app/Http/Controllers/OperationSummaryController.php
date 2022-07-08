@@ -26,7 +26,7 @@ class OperationSummaryController extends Controller
     {
         try {
             $response = $this->dadosTeContract->search($request->all(), true);
-            $response = Helpers::orderByDate($response);
+            $response = Helpers::orderByDate($response, 'm/Y');
             return (new OperationSummaryResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
