@@ -14,7 +14,7 @@ use OwenIt\Auditing\Auditable;
 
 class Pld extends Model implements Auditing
 {
-    use HasFactory, SoftDeletes, Auditable;
+    use HasFactory, Auditable;
 
     protected $table = "pld";
 
@@ -41,6 +41,5 @@ class Pld extends Model implements Auditing
     {
         return $date->format('d/m/Y H:i:s');
     }
-
 
 }

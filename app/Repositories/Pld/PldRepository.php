@@ -159,18 +159,19 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             'pld.submercado as submarket',
             DB::raw("AVG(pld.valor) as value"),
             DB::raw("pld.mes_ref as year_month"),
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'::text)::timestamp with time zone, 'MM/YYYY'::text) as year_month_formatted"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'::text)::timestamp with time zone, 'MM/YYYY'::text) as year_month_formatted")
         ];
 
-        $i = 0;
-        foreach ($params['filters'] as $param) {
-            if ($param['field'] === $field) {
-                $params['filters'][$i]['field'] = "TO_CHAR(TO_DATE(pld.{$param['field']}, 'YYMM'), 'MM/YYYY')";
-            }
-            $i++;
-        }
+        $fields2 = ['day_formatted',
+            'day_calc',
+            'submarket',
+            'year_month',
+            'year_month_formatted',
+            'value',
+            DB::raw('avg(value) over(ORDER BY day_formatted) as mMovel')
+        ];
 
-        return $this->execute($fields, $params)
+        $query = $this->execute($fields)
             ->groupBy(
                 DB::raw("(to_char(('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision)), 'DD'::text))"),
                 DB::raw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision))"),
@@ -178,9 +179,12 @@ class PldRepository extends AbstractRepository implements PldContractInterface
                 "pld.mes_ref",
                 DB::raw("(to_char((to_date(pld.mes_ref, 'YYMM'::text))::timestamp with time zone, 'MM/YYYY'::text))")
             )
-            ->orderByRaw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision))")
-            ->get();
+            ->orderByRaw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision))");
 
+        return $this->execute($fields2, $params)
+            ->from($query, 'plds')
+            ->orderBy('day_calc', 'asc')
+            ->get();
     }
 
     public function getConsumptionBySchedule($params, $field = "dia_num"): Collection|array
