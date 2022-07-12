@@ -37,6 +37,7 @@ class DadosTeRepository extends AbstractRepository implements DadosTeContractInt
         $fields = [
             "dados_te.mes",
             'dados_te.cod_smart_unidade',
+            'dados_cadastrais.unidade',
             'dados_te.operacao',
             'dados_te.tipo',
             'dados_te.perfil_contr as contraparte',
