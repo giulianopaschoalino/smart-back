@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use OwenIt\Auditing\Contracts\Auditable as Auditing;
 use OwenIt\Auditing\Auditable;
 
@@ -42,5 +43,17 @@ class Med5min extends Model implements Auditing
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('d/m/Y H:i:s');
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('dados_cadastrais', function (Builder $builder){
+           $builder->join(
+               "dados_cadastrais",
+               "dados_cadastrais.codigo_scde",
+               "=",
+               "med_5min.ponto"
+           );
+        });
     }
 }

@@ -31,35 +31,10 @@ class TelemetryController extends Controller
         }
     }
 
-    public function powerFactor(Request $request)
-    {
-        try {
-            $response = $this->med5minContract->getPowerFactor($request->all());
-            return (new TelemetryResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    public function demand(Request $request)
-    {
-        try {
-            $response = $this->med5minContract->getDemand($request->all());
-            return (new TelemetryResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function discretization(Request $request)
     {
         try {
-            $response = $this->med5minContract->getDiscretization($request->all());
+            $response = $this->med5minContract->getDiscretization($request->all(), $request->getPathInfo());
             return (new TelemetryResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);

@@ -8,13 +8,11 @@ use App\Repositories\ContractInterface;
 
 interface Med5minContractInterface extends ContractInterface
 {
-    public function getDiscretized5min($params);
-    public function getDiscretized15min($params);
-    public function getDiscretizedOneHour($params);
-    public function getDiscretizedOneDay($params);
-    public function getDiscretizedOneMonth($params);
-    public function getPowerFactor($params);
-    public function getDemand($params);
-    public function getDiscretization($params);
+    public function getDiscretized5min($params, bool $typeField);
+    public function getDiscretized15min($params, bool $typeField);
+    public function getDiscretizedOneHour($params, bool $typeField);
+    public function getDiscretizedOneDay($params, bool $typeField);
+    public function getDiscretizedOneMonth($params, bool $typeField);
+    public function getDiscretization($params, $path);
 
 }
