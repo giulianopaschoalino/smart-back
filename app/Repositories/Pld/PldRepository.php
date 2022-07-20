@@ -159,7 +159,8 @@ class PldRepository extends AbstractRepository implements PldContractInterface
             'pld.submercado as submarket',
             DB::raw("AVG(pld.valor) as value"),
             DB::raw("pld.mes_ref as year_month"),
-            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'::text)::timestamp with time zone, 'MM/YYYY'::text) as year_month_formatted")
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'::text)::timestamp with time zone, 'MM/YYYY'::text) as year_month_formatted"),
+            DB::raw("TO_CHAR(TO_DATE(pld.mes_ref, 'YYMM'), 'MM/YYYY') AS mes_ref"),
         ];
 
         $fields2 = ['day_formatted',
@@ -180,6 +181,7 @@ class PldRepository extends AbstractRepository implements PldContractInterface
                 DB::raw("(to_char((to_date(pld.mes_ref, 'YYMM'::text))::timestamp with time zone, 'MM/YYYY'::text))")
             )
             ->orderByRaw("('1899-12-30'::date + ('1 day'::interval day * (pld.dia_num)::double precision))");
+
 
         return $this->execute($fields2, $params)
             ->from($query, 'plds')
