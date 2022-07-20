@@ -34,7 +34,6 @@ class Helpers
 
     public static function checkDate($value): array
     {
-
         $year = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
             ->explode('-')->offsetGet(0)))->unique()->toArray();
         $month = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
