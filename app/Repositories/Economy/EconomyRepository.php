@@ -153,9 +153,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
 
-        $result = Helpers::checkDate($value);
-
-        return Helpers::orderByDate($result);
+       return Helpers::checkDate($value);
     }
 
 }
