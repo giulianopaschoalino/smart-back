@@ -7,6 +7,7 @@ namespace App\Repositories\Economy;
 use App\Helpers\Helpers;
 use App\Models\Economy;
 use App\Repositories\AbstractRepository;
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use Illuminate\Database\Eloquent\Builder;
@@ -152,6 +153,9 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->get();
 
-        return Helpers::checkDate($value);
+        $result = Helpers::checkDate($value);
+
+        return Helpers::orderByDate($result);
     }
+
 }

@@ -21,19 +21,20 @@ class Helpers
         return $result;
     }
 
-    public static function orderByDate($result, $format ='M/Y',  $field = 'mes'): array
+    public static function orderByDate($result, $old_format = 'Y-m-d', $format ='M/Y', $field = 'mes'): array
     {
         return collect($result)
             ->transform(fn($value) => Arr::set(
                 $value,
                 $field,
-                Carbon::createFromFormat('ym', $value[$field])->locale('pt-BR')
+                Carbon::createFromFormat($old_format, $value[$field])->locale('pt-BR')
                     ->translatedFormat($format)))
             ->all();
     }
 
     public static function checkDate($value): array
     {
+
         $year = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
             ->explode('-')->offsetGet(0)))->unique()->toArray();
         $month = collect($value)->transform(fn($item, $value) => collect(Str::of($item['mes'])
