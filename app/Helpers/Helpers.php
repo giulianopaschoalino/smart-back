@@ -32,6 +32,23 @@ class Helpers
             ->all();
     }
 
+    public static function formatOfFooter($result, $format ='d/m/Y H:i', $field = 'day_formatted'): array
+    {
+        return collect($result)->transform(function ($item) use ($field, $format) {
+
+            $date = $item->day_formatted;
+            $hor = $item->hora;
+            $min = ($item->minut % 60);
+
+            $min = $min < 10 ? "0{$min}" : $min;
+
+            $hor = $hor < 10 ? "0{$hor}" : $hor;
+
+            return Arr::set($item, $field, Carbon::createFromFormat('d/m/Y Hi', $date . ' ' . $hor . $min)->locale('pt-BR')
+                ->translatedFormat($format));
+        })->all();
+    }
+
     public static function checkDate($value): array
     {
 

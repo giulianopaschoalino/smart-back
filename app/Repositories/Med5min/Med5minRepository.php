@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Med5min;
 
+use App\Helpers\Helpers;
 use App\Models\Med5min;
 use App\Repositories\AbstractRepository;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
@@ -38,9 +40,9 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             return abort(404, 'Error! The type field needs to be filled in.');
         }
 
-        $typeField = collect($path)->map(function($item){
+        $typeField = collect($path)->map(function ($item) {
             $value = Str::of($item)->explode('/')->offsetGet(3);
-            return $value === "powerFactor" ? true : ($value === "demand"? false : null);
+            return $value === "powerFactor" ? true : ($value === "demand" ? false : null);
         })->first();
 
         $type = $params['type'];
@@ -56,7 +58,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         };
     }
 
-    public function getDiscretized5min($params, bool $typeField = null): Collection|array
+    public function getDiscretized5min($params, bool $typeField = null)
     {
 
         $fields =
@@ -70,18 +72,18 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
 
-        if (!is_null($typeField))
-        {
+        if (!is_null($typeField)) {
             $fields = $this->typeField($fields, $typeField);
         }
 
         $groupBy = $this->groupField($typeField);
 
-        return $this->execute($fields, $params)
+        $result = $this->execute($fields, $params)
             ->groupBy($groupBy)
             ->distinct()
             ->get();
 
+        return Helpers::formatOfFooter($result);
     }
 
     public function getDiscretized15min($params, $typeField = null)
@@ -97,17 +99,18 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
 
-        if (!is_null($typeField))
-        {
+        if (!is_null($typeField)) {
             $fields = $this->typeField($fields, $typeField);
         }
 
         $groupBy = $this->groupField($typeField);
 
-        return $this->execute($fields, $params)
+        $result = $this->execute($fields, $params)
             ->groupBy($groupBy)
             ->distinct()
             ->get();
+
+        return Helpers::formatOfFooter($result);
     }
 
     public function getDiscretizedOneHour($params, $typeField = null, string $type = '1_hora'): Collection|array
@@ -122,17 +125,18 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
 
-        if (!is_null($typeField))
-        {
+        if (!is_null($typeField)) {
             $fields = $this->typeField($fields, $typeField);
         }
 
         $groupBy = $this->groupField($typeField, $type);
 
-        return $this->execute($fields, $params)
+        $result = $this->execute($fields, $params)
             ->groupBy($groupBy)
             ->distinct()
             ->get();
+
+        return Helpers::formatOfFooter($result);
     }
 
     public function getDiscretizedOneDay($params, $typeField = null, string $type = '1_dia'): Collection|array
@@ -146,8 +150,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
 
-        if (!is_null($typeField))
-        {
+        if (!is_null($typeField)) {
             $fields = $this->typeField($fields, $typeField);
         }
 
@@ -184,8 +187,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) As reativa")
             ];
 
-        if (!is_null($typeField))
-        {
+        if (!is_null($typeField)) {
             $fields = $this->typeField($fields, $typeField);
         }
 
@@ -214,7 +216,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
     private function typeField(array $fields, bool $typeField): array
     {
 
-        return collect($fields)->when($typeField, function ($collection, $value){
+        return collect($fields)->when($typeField, function ($collection, $value) {
 
             $field =
                 [
@@ -224,7 +226,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             return $collection->merge($field);
 
-        }, function ($collection, $value){
+        }, function ($collection, $value) {
 
             $field =
                 [
@@ -242,25 +244,21 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
     {
         $fields = ["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minut'];
 
-        if ($type === '1_hora')
-        {
+        if ($type === '1_hora') {
             array_splice($fields, 4);
         }
 
-        if ($type === '1_dia' || $type === '1_mes')
-        {
+        if ($type === '1_dia' || $type === '1_mes') {
             array_splice($fields, 3);
         }
 
-        if ($typeField === false)
-        {
+        if ($typeField === false) {
             $item = ['dem_cont'];
             return collect($fields)->merge($item)->all();
         }
 
         return $fields;
     }
-
 
 
 }
