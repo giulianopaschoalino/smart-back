@@ -83,7 +83,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     public function getGrossMonthlyEconomy($params)
     {
         $field = [
-            DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
+            "economia.mes",
             DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_cativo)) as econ_percentual"),
             "economia.dad_estimado"
