@@ -66,8 +66,8 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 'med_5min.ponto',
                 'med_5min.dia_num',
                 DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
-                DB::raw("(med_5min.minuto/60) AS hora"),
-                DB::raw("MOD(med_5min.minuto,60) AS minut"),
+                DB::raw("((med_5min.minuto-5)/60) AS hora"),
+                DB::raw("MOD((med_5min.minuto-5),60) AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
@@ -93,8 +93,8 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 'med_5min.ponto',
                 'med_5min.dia_num',
                 DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
-                DB::raw("(med_5min.minuto/60) AS hora"),
-                DB::raw("((MOD(med_5min.minuto,60)/15)+1)*15 AS minut"),
+                DB::raw("((med_5min.minuto-5)/60) AS hora"),
+                DB::raw("((MOD((med_5min.minuto-5),60)/15)+1)*15 AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
@@ -115,12 +115,13 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
     public function getDiscretizedOneHour($params, $typeField = null, string $type = '1_hora'): Collection|array
     {
+        //retirado -5 pelo motivo que o minuto 1440 na verdade é o intervalo de consumo entre 23:55:01 até 00:00:00. Por 00:00:00 cair no dia seguinte, estava dando problema no gráfico.
         $fields =
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
                 DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
-                DB::raw("(med_5min.minuto/60) AS hora"),
+                DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
@@ -220,7 +221,17 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             $field =
                 [
-                    DB::raw("(SUM(med_5min.ativa_consumo)/SQRT(((SUM(med_5min.ativa_consumo)^2) + (SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2)))) as FP"),
+//                    DB::raw("(SUM(med_5min.ativa_consumo)/SQRT(((SUM(med_5min.ativa_consumo)^2) + (SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2)))) as FP"),
+                    DB::raw("
+                    (
+                        SUM(med_5min.ativa_consumo)
+                        /
+                        SQRT(
+                            SUM(med_5min.ativa_consumo)^2
+                            +
+                            SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2
+                        )
+                    ) as FP"),
                     DB::raw("0.92 as F_ref")
                 ];
 
