@@ -65,7 +65,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("MOD((med_5min.minuto-5),60) AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
@@ -92,7 +92,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("((MOD((med_5min.minuto-5),60)/15)+1)*15 AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
@@ -120,7 +120,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
@@ -146,7 +146,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             [
                 'med_5min.ponto',
                 'med_5min.dia_num',
-                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
             ];
@@ -175,15 +175,15 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                         -
                         to_date(
                             concat(
-                                extract( YEAR from date '1899-12-31' + cast (med_5min.dia_num as integer)), 
+                                extract( YEAR from date '1899-12-30' + cast (med_5min.dia_num as integer)), 
                                 '/',
-                                extract( month from date '1899-12-31' + cast (med_5min.dia_num as integer))
+                                extract( month from date '1899-12-30' + cast (med_5min.dia_num as integer))
                             ), 
                             'YYYY/MM'
                         )
                     ))
 	            ) as dia_data"),
-                DB::raw("TO_CHAR((date('1899-12-31') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("SUM(med_5min.ativa_consumo) As consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) As reativa")
             ];
@@ -206,7 +206,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         $arr['filters'] = collect($params['filters'])
             ->map(function ($value) use ($field) {
                 if ($value['field'] === $field) {
-                    Arr::set($value, "field", "(date('1899-12-31') + interval '1' DAY * med_5min.{$value['field']})");
+                    Arr::set($value, "field", "(date('1899-12-30') + interval '1' DAY * med_5min.{$value['field']})");
                     $value['row'] = true;
                 }
                 return $value;
