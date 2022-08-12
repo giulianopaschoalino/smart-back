@@ -220,7 +220,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             $field =
                 [
-                    DB::raw("(SUM(med_5min.ativa_consumo)/(SUM(med_5min.ativa_consumo)^2 +SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2))*1000 as FP"),
+                    DB::raw("(SUM(med_5min.ativa_consumo)/SQRT(((SUM(med_5min.ativa_consumo)^2) + (SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2))))*100 as FP"),
                     DB::raw("0.92 as F_ref")
                 ];
 
@@ -230,6 +230,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             $field =
                 [
+		    DB::raw("(CASE WHEN ((med_5min.minuto/60) >= 18 AND (med_5min.minuto/60) <= 21) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END)*1.05 as dem_tolerancia"),
                     DB::raw("SUM(med_5min.ativa_consumo) AS dem_reg"),
                     DB::raw("(CASE WHEN ((med_5min.minuto/60) >= 18 AND (med_5min.minuto/60) <= 21) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
                 ];
