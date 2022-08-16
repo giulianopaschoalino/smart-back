@@ -141,7 +141,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     {
         $field = [
             DB::raw("TO_DATE(economia.mes, 'YYMM') as mes"),
-            DB::raw("SUM(economia.custo_unit) as custo_unit"),
+            DB::raw("SUM(economia.custo_unit)/COUNT(economia.custo_unit) as custo_unit"),
             "economia.dad_estimado"
         ];
 
