@@ -93,7 +93,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->where('dados_cadastrais.codigo_scde', '!=', '0P')
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
-                DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-01'), 'YYYY-MM-DD') - interval '1' year"))
+                DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-01-01'), 'YYYY-MM-DD')"))
             ->groupBy(['mes', 'dad_estimado'])
             ->orderBy(DB::raw("mes, dad_estimado"))
             ->havingRaw("sum(custo_livre) > 0")
