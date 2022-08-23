@@ -241,9 +241,9 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             $field =
                 [
-		    DB::raw("(CASE WHEN ((med_5min.minuto-5/60) >= 18 AND (med_5min.minuto-5/60) < 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END)*1.05 as dem_tolerancia"),
+		            DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) < 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END)*1.05 as dem_tolerancia"),
                     DB::raw("SUM(med_5min.ativa_consumo) AS dem_reg"),
-                    DB::raw("(CASE WHEN ((med_5min.minuto-5/60) >= 18 AND (med_5min.minuto-5/60) <= 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
+                    DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) <= 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
                 ];
 
             return $collection->merge($field);
@@ -254,7 +254,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
     public function groupField($typeField, $type = null): array
     {
-        $fields = ["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minut'];
+        $fields = ["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minuto'];
 
         if ($type === '1_hora') {
             array_splice($fields, 4);
