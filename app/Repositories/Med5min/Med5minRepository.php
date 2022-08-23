@@ -265,7 +265,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         }
 
         if ($typeField === false) {
-            $item = ['dem_cont'];
+            $item = ['dem_cont', 'dem_tolerancia'];
             return collect($fields)->merge($item)->all();
         }
 
