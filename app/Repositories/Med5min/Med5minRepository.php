@@ -254,7 +254,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
     public function groupField($typeField, $type = null): array
     {
-        $fields = ["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minuto'];
+        $fields = ["med_5min.ponto", "med_5min.dia_num", "day_formatted", 'hora', 'minut'];
 
         if ($type === '1_hora') {
             array_splice($fields, 4);
