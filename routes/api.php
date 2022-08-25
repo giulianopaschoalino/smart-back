@@ -77,6 +77,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('notify', [\App\Http\Controllers\NotificationController::class, 'notify']);
 
     Route::get('news', [\App\Http\Controllers\NewsController::class, 'send']);
+
 });
+Route::get('import', [\App\Http\Controllers\UserController::class, 'importUserControll']);
 
 
