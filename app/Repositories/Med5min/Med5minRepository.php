@@ -83,7 +83,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ->distinct()
             ->get();
 
-        Log::debug('5min');
+        //Log::debug('5min');
 
         return Helpers::formatOfFooter($result);
     }
