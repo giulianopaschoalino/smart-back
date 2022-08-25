@@ -73,7 +73,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ];
 
         if (!is_null($typeField)) {
-            $fields = $this->typeField($fields, $typeField);
+            $fields = $this->typeField($fields, $typeField, 5);
         }
 
         $groupBy = $this->groupField($typeField);
@@ -82,6 +82,8 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ->groupBy($groupBy)
             ->distinct()
             ->get();
+
+        Log::debug('5min');
 
         return Helpers::formatOfFooter($result);
     }
@@ -100,7 +102,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ];
 
         if (!is_null($typeField)) {
-            $fields = $this->typeField($fields, $typeField);
+            $fields = $this->typeField($fields, $typeField, 15);
         }
 
         $groupBy = $this->groupField($typeField);
@@ -127,7 +129,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             ];
 
         if (!is_null($typeField)) {
-            $fields = $this->typeField($fields, $typeField);
+            $fields = $this->typeField($fields, $typeField, 60);
         }
 
         $groupBy = $this->groupField($typeField, $type);
@@ -214,7 +216,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         return $arr;
     }
 
-    private function typeField(array $fields, bool $typeField): array
+    private function typeField(array $fields, bool $typeField, $period = 60): array
     {
 
         return collect($fields)->when($typeField, function ($collection, $value) {
@@ -237,12 +239,19 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             return $collection->merge($field);
 
-        }, function ($collection, $value) {
+        }, function ($collection, $value) use($period) {
+
+            $multiplyBy = 1;
+            if($period === 5) {
+                $multiplyBy = 12;
+            }else if($period === 15) {
+                $multiplyBy = 4;
+            }
 
             $field =
                 [
 		            DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) < 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END)*1.05 as dem_tolerancia"),
-                    DB::raw("SUM(med_5min.ativa_consumo) AS dem_reg"),
+                    DB::raw("SUM(med_5min.ativa_consumo)*".$multiplyBy." AS dem_reg"),
                     DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) <= 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
                 ];
 
