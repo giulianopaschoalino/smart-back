@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -152,15 +153,14 @@ class UserController extends Controller
                 //echo 'VAZIO'.PHP_EOL;
             }else{
                 $pwd = randomPassword();
-                /*$user = User::create([
+                $user = User::create([
                     'client_id'      => $arrayCodCliente[$i],
                     'name'           => $userOld->name,
-                    'client'         => 
                     'email'          => $arrayEmail[$i],
-                    'password'       => bcrypt('password'),
-                    'remember_token' => null,
-                ]);*/
-                //$user->roles()->sync(2);
+                    'password'       => Hash::make($pwd),
+                    'profile_picture' => $userOld->profile_picture
+                ]);
+                $user->roles()->sync(2);
                 echo $arrayCodCliente[$i].';'.$arrayEmail[$i].';'.$pwd.'<br>'.PHP_EOL;
             }
         }
