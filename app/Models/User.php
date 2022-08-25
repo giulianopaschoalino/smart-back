@@ -30,6 +30,7 @@ class User extends Authenticatable implements Auditing
         'created_at',
         'updated_at',
         'deleted_at',
+        'client_id'
     ];
 
     protected $hidden = [
