@@ -14,4 +14,8 @@ class UserRepository extends AbstractRepository implements UserContractInterface
         parent::__construct($user);
     }
 
+    public function getOrdered()
+    {
+        return $this->model->with('roles')->orderBy('name')->get();
+    }
 }

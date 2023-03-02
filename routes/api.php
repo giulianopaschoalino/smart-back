@@ -71,6 +71,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('telemetry/demand', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
     Route::post('telemetry/discretization', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
 
+    Route::get('telemetry/download', [\App\Http\Controllers\TelemetryController::class, 'download']);
+
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']); // Resumo Operações
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);
 

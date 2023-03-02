@@ -33,7 +33,7 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $response = $this->user->withRelationsByAll('roles');
+            $response = $this->user->getOrdered();
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_OK);
