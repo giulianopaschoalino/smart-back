@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 
     Route::post('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'store']);
 
+    Route::post('sendFile', [\App\Http\Controllers\FileController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {

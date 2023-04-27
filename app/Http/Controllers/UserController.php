@@ -100,7 +100,9 @@ class UserController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         try {
-            $response = $this->user->update($request->all(), $id);
+            $data = $request->all();
+            $data['password'] = bcrypt($request->password);
+            $response = $this->user->update($data, $id);
             return (new UserResource($response))
                 ->response()
                 ->setStatusCode(Response::HTTP_ACCEPTED);
