@@ -1,11 +1,9 @@
 @component('mail::message')
-# Introduction
+# Recuperação de senha
 
-The body of your message.
+O seu código de recuperação de senha é <h4>{{$pin}}</h4>
+<p>Por favor, não compartilhe o código com ninguém.</p>
 
-Your six-digit PIN is <h4>{{$pin}}</h4>
-<p>Please do not share your One Time Pin With Anyone. You made a request to reset your password. Please discard if this wasn't you.</p>
-
-Thanks,<br>
+Agradecido,<br>
 {{ config('app.name') }}
 @endcomponent
