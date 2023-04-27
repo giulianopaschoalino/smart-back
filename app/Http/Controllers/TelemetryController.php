@@ -43,6 +43,16 @@ class TelemetryController extends Controller
         }
     }
 
-
+    public function download(Request $request)
+    {
+        try {
+            $response = $this->med5minContract->getDiscretization($request->all(), $request->getPathInfo());
+            return (new TelemetryResource($response))
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        } catch (\Exception $ex) {
+            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 
     Route::post('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'store']);
 
+    Route::post('sendFile', [\App\Http\Controllers\FileController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
@@ -70,6 +71,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('telemetry/powerFactor', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
     Route::post('telemetry/demand', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
     Route::post('telemetry/discretization', [\App\Http\Controllers\TelemetryController::class, 'discretization']);
+
+    Route::get('telemetry/download', [\App\Http\Controllers\TelemetryController::class, 'download']);
 
     Route::post('operation/summary', [\App\Http\Controllers\OperationSummaryController::class, 'operationSummary']); // Resumo Operações
     Route::post('operation', [\App\Http\Controllers\OperationSummaryController::class, 'index']);

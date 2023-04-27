@@ -170,22 +170,38 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         $fields =
             [
                 'med_5min.ponto',
-                'med_5min.dia_num',
-                DB::raw("(
-                    med_5min.dia_num::INTEGER - extract(day from (
-                        (date('1899-12-30') + interval '1' day * med_5min.dia_num)
-                        -
-                        to_date(
-                            concat(
-                                extract( YEAR from date '1899-12-30' + cast (med_5min.dia_num as integer)), 
-                                '/',
-                                extract( month from date '1899-12-30' + cast (med_5min.dia_num as integer))
-                            ), 
-                            'YYYY/MM'
-                        )
-                    ))
-	            ) as dia_data"),
-                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                //'med_5min.dia_num',
+                // DB::raw("(
+                //     med_5min.dia_num::INTEGER - extract(day from (
+                //         (date('1899-12-30') + interval '1' day * med_5min.dia_num)
+                //         -
+                //         to_date(
+                //             concat(
+                //                 extract( YEAR from date '1899-12-30' + cast (med_5min.dia_num as integer)), 
+                //                 '/',
+                //                 extract( month from date '1899-12-30' + cast (med_5min.dia_num as integer))
+                //             ), 
+                //             'YYYY/MM'
+                //         )
+                //     ))
+	            // ) as dia_data"),
+                // DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
+                DB::raw("
+                    (med_5min.dia_num::INTEGER - extract(day from (
+                            (date('1899-12-30') + interval '1' day * med_5min.dia_num)
+                            -
+                            to_date(
+                                concat(
+                                    extract( YEAR from date '1899-12-30' + cast (med_5min.dia_num as integer)), 
+                                    '/',
+                                    extract( month from date '1899-12-30' + cast (med_5min.dia_num as integer))
+                                ), 
+                                'YYYY/MM'
+                            )
+                        ))
+                    ) as dia_num_month
+                "),
+                DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'MM/YYYY') as day_formatted"),
                 DB::raw("SUM(med_5min.ativa_consumo) As consumo"),
                 DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) As reativa")
             ];
@@ -196,11 +212,17 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
         $groupBy = $this->groupField($typeField, $type);
 
-        return $this->execute($fields, $params)
-            ->groupBy($groupBy)
-            ->orderBy(DB::raw("med_5min.dia_num, med_5min.ponto"))
-            ->get();
+        $result = $this->execute($fields, $params)
+        ->groupBy($groupBy)
+        ->orderBy(DB::raw("dia_num_month, med_5min.ponto"))
+        ->get();
 
+        foreach($result as $row) {
+            $row['dia_num'] = $row['dia_num_month'];
+            unset($row['dia_num_month']);
+        }
+
+        return $result;
     }
 
     public static function filterRow($params, $field = 'dia_num'): array
@@ -271,6 +293,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
         if ($type === '1_dia' || $type === '1_mes') {
             array_splice($fields, 3);
+        }
+
+        if($type === '1_mes') {
+            $fields = ["med_5min.ponto", "dia_num_month", "day_formatted"];
         }
 
         if ($typeField === false) {
