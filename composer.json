@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
@@ -52,7 +55,24 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ]
+        ],
+        "cached": [
+            "@php artisan optimize --ansi",
+            "@php artisan view:clear --ansi",
+            "@php artisan view:cache --ansi",
+            "@php artisan route:clear --ansi",
+            "@php artisan event:cache --ansi"
+        ],
+        "clear-cached": [
+            "@php artisan optimize:clear",
+            "@php artisan cache:clear --ansi",
+            "@php artisan view:clear --ansi",
+            "@php artisan route:clear --ansi",
+            "@php artisan event:clear --ansi",
+            "@php artisan config:clear --ansi",
+            "@php artisan schedule:clear-cache --ansi"
+        ],
+        "dev": "@php artisan serve --host=0.0.0.0 --port=8080 --ansi"
     },
     "extra": {
         "laravel": {

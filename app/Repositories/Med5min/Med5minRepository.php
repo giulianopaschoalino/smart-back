@@ -7,7 +7,6 @@ namespace App\Repositories\Med5min;
 use App\Helpers\Helpers;
 use App\Models\Med5min;
 use App\Repositories\AbstractRepository;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
@@ -184,7 +183,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 //             'YYYY/MM'
                 //         )
                 //     ))
-	            // ) as dia_data"),
+                // ) as dia_data"),
                 // DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("
                     (med_5min.dia_num::INTEGER - extract(day from (
@@ -213,11 +212,11 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
         $groupBy = $this->groupField($typeField, $type);
 
         $result = $this->execute($fields, $params)
-        ->groupBy($groupBy)
-        ->orderBy(DB::raw("dia_num_month, med_5min.ponto"))
-        ->get();
+            ->groupBy($groupBy)
+            ->orderBy(DB::raw("dia_num_month, med_5min.ponto"))
+            ->get();
 
-        foreach($result as $row) {
+        foreach ($result as $row) {
             $row['dia_num'] = $row['dia_num_month'];
             unset($row['dia_num_month']);
         }
@@ -245,42 +244,37 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
             $field =
                 [
-//                    DB::raw("(SUM(med_5min.ativa_consumo)/SQRT(((SUM(med_5min.ativa_consumo)^2) + (SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2)))) as FP"),
                     DB::raw("
                     (
                         SUM(med_5min.ativa_consumo)
                         /
-                        SQRT(
-                            SUM(med_5min.ativa_consumo)^2
-                            +
-                            SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2
-                        )
+                        CASE WHEN SQRT(SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2) <> 0
+                            THEN SQRT(SUM(med_5min.reativa_consumo+med_5min.reativa_geracao)^2)
+                            ELSE NULL
+                        END
                     ) as FP"),
                     DB::raw("0.92 as F_ref")
                 ];
 
             return $collection->merge($field);
-
-        }, function ($collection, $value) use($period) {
+        }, function ($collection, $value) use ($period) {
 
             $multiplyBy = 1;
-            if($period === 5) {
+            if ($period === 5) {
                 $multiplyBy = 12;
-            }else if($period === 15) {
+            } else if ($period === 15) {
                 $multiplyBy = 4;
             }
 
             $field =
                 [
-		            DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) < 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END)*1.05 as dem_tolerancia"),
-                    DB::raw("SUM(med_5min.ativa_consumo)*".$multiplyBy." AS dem_reg"),
+                    DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) < 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END)*1.05 as dem_tolerancia"),
+                    DB::raw("SUM(med_5min.ativa_consumo)*" . $multiplyBy . " AS dem_reg"),
                     DB::raw("(CASE WHEN (((med_5min.minuto-5)/60) >= 18 AND ((med_5min.minuto-5)/60) <= 21 AND extract( dow from date '1899-12-30' + cast (med_5min.dia_num as integer)) BETWEEN 1 AND 5) THEN dados_cadastrais.demanda_p ELSE dados_cadastrais.demanda_fp  END) as dem_cont")
                 ];
 
             return $collection->merge($field);
-
         })->all();
-
     }
 
     public function groupField($typeField, $type = null): array
@@ -295,7 +289,7 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
             array_splice($fields, 3);
         }
 
-        if($type === '1_mes') {
+        if ($type === '1_mes') {
             $fields = ["med_5min.ponto", "dia_num_month", "day_formatted"];
         }
 
@@ -306,6 +300,4 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
 
         return $fields;
     }
-
-
 }
