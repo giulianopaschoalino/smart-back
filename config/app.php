@@ -97,7 +97,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'pt_BR',
+    'fallback_locale' => 'en',
 
     /*
     |--------------------------------------------------------------------------
@@ -187,6 +187,8 @@ return [
         /*
          * Package Service Providers...
          */
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        ZanySoft\Zip\ZipServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -217,6 +219,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Excel' => \Maatwebsite\Excel\Facades\Excel::class,
+        'Zip' => \ZanySoft\Zip\Facades\Zip::class,
     ])->toArray(),
 
 ];

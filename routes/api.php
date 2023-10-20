@@ -1,6 +1,4 @@
 <?php
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,6 +80,5 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::get('news', [\App\Http\Controllers\NewsController::class, 'send']);
 
 });
-Route::get('import', [\App\Http\Controllers\UserController::class, 'importUserControll']);
 
-
+Route::post('import', [\App\Http\Controllers\UserController::class, 'importUserControll']);

@@ -14,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dados_te', function (Blueprint $table) {
-            $table->bigInteger('cod_te')->unsigned();
-            $table->bigInteger('cod_smart_unidade')->unsigned();
+            $table->bigInteger('cod_te');
+            $table->bigInteger('cod_smart_unidade');
             $table->text('mes')->nullable();
             $table->text('operacao')->nullable();
             $table->text('tipo')->nullable();
@@ -26,8 +26,12 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('cod_smart_unidade', 'dados_te_cod_smart_unidade_fkey')
-                ->references('cod_smart_unidade')->on('dados_cadastrais')->onDelete('no action')->onUpdate('no action');
+            $table
+                ->foreign('cod_smart_unidade', 'dados_te_cod_smart_unidade_fkey')
+                ->references('cod_smart_unidade')
+                ->on('dados_cadastrais')
+                ->onDelete('no action')
+                ->onUpdate('no action');
 
             $table->primary(['cod_te', 'cod_smart_unidade']);
         });
