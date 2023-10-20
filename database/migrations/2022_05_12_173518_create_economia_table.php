@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('economia', function (Blueprint $table) {
 
-            $table->bigInteger('cod_econ')->unsigned();
-            $table->bigInteger('cod_smart_unidade')->unsigned();
+            $table->bigInteger('cod_econ');
+            $table->bigInteger('cod_smart_unidade');
             $table->text('mes')->nullable()->default(null);
             $table->decimal('custo_cativo', 30, 10)->nullable();
             $table->decimal('custo_livre', 30, 10)->nullable();
@@ -27,8 +27,12 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('cod_smart_unidade', 'economia_cod_smart_unidade_fkey')
-                ->references('cod_smart_unidade')->on('dados_cadastrais')->onDelete('no action')->onUpdate('no action');
+            $table
+                ->foreign('cod_smart_unidade', 'economia_cod_smart_unidade_fkey')
+                ->references('cod_smart_unidade')
+                ->on('dados_cadastrais')
+                ->onDelete('no action')
+                ->onUpdate('no action');
 
             $table->primary(['cod_econ', 'cod_smart_unidade']);
         });
