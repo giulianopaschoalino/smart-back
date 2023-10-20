@@ -98,7 +98,7 @@ class UsersWithSmartUsersImport implements ToCollection
 
     private function uploadProfilePictures()
     {
-        $temp_extract_files_path = storage_path('app/extract');
+        $temp_extract_files_path = storage_path('app/extracts');
 
         $zip = Zip::open($this->files_logos);
         $zip->extract($temp_extract_files_path);

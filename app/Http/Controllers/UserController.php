@@ -147,9 +147,8 @@ class UserController extends Controller
 
         $filename = preg_replace("/imports\//", "", $user_imports_path);
 
-        Excel::import(new UsersWithSmartUsersImport($file_logos), $filename, $driver);
+        Excel::import(new UsersWithSmartUsersImport($file_logos), $user_imports_path, $driver);
 
-        sleep(2000);
         Storage::disk($driver)->delete($filename);
 
         return response()
