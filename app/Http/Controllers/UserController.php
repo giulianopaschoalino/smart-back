@@ -149,7 +149,7 @@ class UserController extends Controller
 
         Excel::import(new UsersWithSmartUsersImport($file_logos), $user_imports_path, $driver);
 
-        Storage::disk($driver)->delete($filename);
+        // Storage::disk($driver)->delete($filename);
 
         return response()
             ->json(['message' => 'Dados importados com sucesso!'])
