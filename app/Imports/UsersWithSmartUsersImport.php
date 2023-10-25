@@ -115,7 +115,8 @@ class UsersWithSmartUsersImport implements ToCollection
                 $picture = new File($temp_file_path);
                 $pathS3 = "avatars/{$picture->hashName()}";
 
-                Storage::disk('s3')->missing($pathS3) && Storage::disk('s3')->put($pathS3, $picture->getContent());
+                Storage::disk('s3')->missing($pathS3) && 
+                Storage::disk('s3')->put($pathS3, $picture->getContent());
 
                 $filename = \preg_replace("/\.[^\.]+$/", "", $filename);
 
