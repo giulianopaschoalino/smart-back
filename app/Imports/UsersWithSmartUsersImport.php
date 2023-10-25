@@ -4,12 +4,14 @@ namespace App\Imports;
 
 use App\Models\DadosCadastrais;
 use App\Models\User;
+
 use Illuminate\Http\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+
 use Maatwebsite\Excel\Concerns\ToCollection;
 use ZanySoft\Zip\Facades\Zip;
 
@@ -113,11 +115,11 @@ class UsersWithSmartUsersImport implements ToCollection
                 $picture = new File($temp_file_path);
                 $pathS3 = "avatars/{$picture->hashName()}";
 
-                Storage::disk('s3')->put($pathS3, $picture->getContent());
+                Storage::disk('s3')->missing($pathS3) && Storage::disk('s3')->put($pathS3, $picture->getContent());
 
                 $filename = \preg_replace("/\.[^\.]+$/", "", $filename);
 
-                $this->files_paths[$filename] = url('/images/test.png') ?? Storage::disk('s3')->url($pathS3);
+                $this->files_paths[$filename] = Storage::disk('s3')->url($pathS3);
 
                 \unlink($temp_file_path);
             });
