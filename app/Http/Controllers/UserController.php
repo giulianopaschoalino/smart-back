@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ImportUsersWithSmartUsersRequest;
-use App\Models\User;
 use App\Traits\ApiResponse;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Imports\UsersWithSmartUsersImport;
 use App\Repositories\Users\UserContractInterface;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
 
+// use Maatwebsite\Excel\Excel as ExcelType;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
@@ -133,26 +131,43 @@ class UserController extends Controller
 
     public function importUserControll(ImportUsersWithSmartUsersRequest $request): JsonResponse
     {
-        /**
-         * @var \Illuminate\Http\UploadedFile $file
-         */
-        $file_users = $request->file('file_users');
-        /**
-         * @var \Illuminate\Http\UploadedFile $file
-         */
-        $file_logos = $request->file('file_logos');
+        try {
+            /**
+             * @var \Illuminate\Http\UploadedFile $file
+             */
+            $file_users = $request->file('file_users');
+            /**
+             * @var \Illuminate\Http\UploadedFile $file
+             */
+            $file_logos = $request->file('file_logos');
 
-        $driver = 'imports';
-        $user_imports_path = $file_users->store($driver);
+            $driver = 'imports';
+            $user_imports_path = $file_users->store($driver);
+            $filename = \preg_replace("/imports\//", "", $user_imports_path);
+            
+            // $mimeType = $file_users->getMimeType();
+            // $type = match($mimeType) {
+            //     "text/csv" => ExcelType::CSV,
+            //     "application/vnd.oasis.opendocument.spreadsheet" => ExcelType::ODS,
+            //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ExcelType::XLSX,
+            //     "application/vnd.ms-excel" => ExcelType::XLS,
+            //     default => ExcelType::XLSX,
+            // };
 
-        $filename = preg_replace("/imports\//", "", $user_imports_path);
+            Excel::import(
+                import: new UsersWithSmartUsersImport($file_logos),
+                filePath: $filename,
+                disk: $driver,
+                // readerType: $type
+            );
 
-        Excel::import(new UsersWithSmartUsersImport($file_logos), $user_imports_path, $driver);
-
-        Storage::disk($driver)->delete($filename);
-
-        return response()
-            ->json(['message' => 'Dados importados com sucesso!'])
-            ->setStatusCode(Response::HTTP_CREATED);
+            return response()
+                ->json(['message' => 'Dados importados com sucesso!'])
+                ->setStatusCode(Response::HTTP_CREATED);
+        } catch (\Throwable $th) {
+            throw $th;
+        } finally {
+            Storage::disk($driver)->delete($filename);
+        }
     }
 }

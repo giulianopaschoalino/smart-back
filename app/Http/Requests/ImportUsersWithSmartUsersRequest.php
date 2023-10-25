@@ -24,7 +24,7 @@ class ImportUsersWithSmartUsersRequest extends FormRequest
     public function rules()
     {
         return [
-            'file_users' => 'required|file|mimetypes:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv',
+            'file_users' => 'required|file|mimetypes:text/csv,application/vnd.oasis.opendocument.spreadsheet,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
             'file_logos' => 'required|file|mimetypes:application/zip',
             'password' => function($attr, $value, $fail) {
                 if($value !== '78s7*a77xghhsa5219129382(*728292SPsk%%%shssajlk') $fail('Senha inválida');
