@@ -141,9 +141,8 @@ class UserController extends Controller
              */
             $file_logos = $request->file('file_logos');
 
-            $driver = 'imports';
-            $user_imports_path = $file_users->store($driver);
-            $filename = \preg_replace("/imports\//", "", $user_imports_path);
+            $disk = 'imports';
+            $filename = $file_users->store(path: "", options: $disk);
             
             // $mimeType = $file_users->getMimeType();
             // $type = match($mimeType) {
@@ -157,7 +156,7 @@ class UserController extends Controller
             Excel::import(
                 import: new UsersWithSmartUsersImport($file_logos),
                 filePath: $filename,
-                disk: $driver,
+                disk: $disk,
                 // readerType: $type
             );
 
