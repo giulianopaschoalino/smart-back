@@ -16,7 +16,6 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
-// use Maatwebsite\Excel\Excel as ExcelType;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
@@ -143,21 +142,11 @@ class UserController extends Controller
 
             $disk = 'imports';
             $filename = $file_users->store(path: "", options: $disk);
-            
-            // $mimeType = $file_users->getMimeType();
-            // $type = match($mimeType) {
-            //     "text/csv" => ExcelType::CSV,
-            //     "application/vnd.oasis.opendocument.spreadsheet" => ExcelType::ODS,
-            //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ExcelType::XLSX,
-            //     "application/vnd.ms-excel" => ExcelType::XLS,
-            //     default => ExcelType::XLSX,
-            // };
 
             Excel::import(
                 import: new UsersWithSmartUsersImport($file_logos),
                 filePath: $filename,
                 disk: $disk,
-                // readerType: $type
             );
 
             return response()
@@ -166,7 +155,7 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         } finally {
-            Storage::disk($driver)->delete($filename);
+            Storage::disk($disk)->delete($filename);
         }
     }
 }
