@@ -9,6 +9,7 @@ use Illuminate\Http\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,7 +67,7 @@ class UsersWithSmartUsersImport implements ToCollection
         $client_id = $row->get(0);
         $name = $client->cliente;
         $email = \trim($row->get(1));
-        $password = Hash::make(Str::random(7));
+        $password = Str::random(7);
         $profile_picture = \array_key_exists($client_id, $this->files_paths)
             ? $this->files_paths[$client_id]
             : '';
@@ -84,7 +85,7 @@ class UsersWithSmartUsersImport implements ToCollection
     {
         $client_id = $row->get(0);
         $name = $client->cliente;
-        $password = Hash::make($row->get(2));
+        $password = $row->get(2);
         $profile_picture = \array_key_exists($client_id, $this->files_paths)
             ? $this->files_paths[$client_id]
             : '';
@@ -115,12 +116,14 @@ class UsersWithSmartUsersImport implements ToCollection
                 $picture = new File($temp_file_path);
                 $pathS3 = "avatars/{$picture->hashName()}";
 
-                Storage::disk('s3')->missing($pathS3) && 
+                App::isProduction() && Storage::disk('s3')->missing($pathS3) && 
                 Storage::disk('s3')->put($pathS3, $picture->getContent());
 
                 $filename = \preg_replace("/\.[^\.]+$/", "", $filename);
 
-                $this->files_paths[$filename] = Storage::disk('s3')->url($pathS3);
+                $this->files_paths[$filename] = App::isProduction() 
+                    ? Storage::disk('s3')->url($pathS3)
+                    : url('test.png');
 
                 \unlink($temp_file_path);
             });
