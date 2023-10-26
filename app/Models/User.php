@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use DateTimeInterface;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+use OwenIt\Auditing\Auditable;
 use Laravel\Sanctum\HasApiTokens;
 use OwenIt\Auditing\Contracts\Auditable as Auditing;
-use OwenIt\Auditing\Auditable;
 
 class User extends Authenticatable implements Auditing
 {
@@ -44,7 +46,14 @@ class User extends Authenticatable implements Auditing
         'email_verified_at' => 'datetime',
     ];
 
-    protected function serializeDate(DateTimeInterface $date): string
+    public function password(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => Hash::make($value)
+        );
+    }
+
+    protected function serializeDate(\DateTimeInterface $date): string
     {
         return $date->format('d/m/Y H:i:s');
     }

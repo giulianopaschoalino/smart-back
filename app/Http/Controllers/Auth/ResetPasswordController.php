@@ -36,7 +36,7 @@ class ResetPasswordController extends Controller
             $user = User::with('roles')->firstWhere('email', $resetPasswordRequest->email);
 
             $user->update([
-                'password' => Hash::make($resetPasswordRequest->password)
+                'password' => $resetPasswordRequest->password
             ]);
 
             return $this->successResponse([

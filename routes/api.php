@@ -82,3 +82,5 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
 });
 
 Route::post('import', [\App\Http\Controllers\UserController::class, 'importUserControll']);
+
+Route::get('ok', fn() => 'ok');
