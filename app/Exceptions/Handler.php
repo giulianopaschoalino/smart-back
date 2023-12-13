@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\ResponseJson;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\QueryException;
@@ -149,6 +150,6 @@ class Handler extends ExceptionHandler
     {
         [$message, $status_code] = $this->messageCustom($ex);
 
-        return response()->json(['error' => $message], $status_code);
+        return ResponseJson::error($message, $status_code);
     }
 }

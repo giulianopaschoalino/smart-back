@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function (){
     Route::post('login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
-    Route::post('logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
     Route::post('/forgot-password', \App\Http\Controllers\Auth\ForgotPasswordController::class);
     Route::post('/reset-password', \App\Http\Controllers\Auth\ResetPasswordController::class);
 });
 
+/* --- Routes verified --- */
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
     Route::get('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'show']);
@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
 
+/* --- Routes Admin --- */
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
 
@@ -53,6 +54,7 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::post('sendFile', [\App\Http\Controllers\FileController::class, 'store']);
 });
 
+/* --- Routes Client --- */
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
 
     Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']); //Visão Geral por Região
@@ -79,6 +81,11 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
 
     Route::get('news', [\App\Http\Controllers\NewsController::class, 'send']);
 
+});
+
+/* --- Routes Admin and Client --- */
+Route::middleware(['auth:sanctum', 'ability:Admin,Client'])->group(function() {
+    Route::post('logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
 
 Route::post('import', [\App\Http\Controllers\UserController::class, 'importUserControll']);

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\EconomyResource;
+use App\Helpers\ResponseJson;
 use App\Repositories\Economy\EconomyContractInterface;
 use App\Traits\ApiResponse;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class EconomyController extends Controller
 {
@@ -24,14 +24,14 @@ class EconomyController extends Controller
     {
         $response = $this->economyContract->search($request->all());
 
-        return response()->json($response, Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 
     public function grossAnnualEconomy(Request $request): JsonResponse
     {
         $response = $this->economyContract->getGrossAnnualEconomy($request->all());
 
-        return response()->json($response, Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 
     public function grossMonthlyEconomy(Request $request): JsonResponse
@@ -39,20 +39,20 @@ class EconomyController extends Controller
 
         $response = $this->economyContract->getGrossMonthlyEconomy($request->all());
 
-        return response()->json($response, Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 
     public function captiveMonthlyEconomy(Request $request): JsonResponse
     {
         $response = $this->economyContract->getCaptiveMonthlyEconomy($request->all());
 
-        return response()->json($response, Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 
     public function costMWhEconomy(Request $request): JsonResponse
     {
         $response = $this->economyContract->getCostMWhEconomy($request->all());
 
-        return response()->json($response, Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 }
