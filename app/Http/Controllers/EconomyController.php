@@ -17,70 +17,42 @@ class EconomyController extends Controller
 
     public function __construct(
         protected EconomyContractInterface $economyContract
-    )
-    {
+    ) {
     }
 
     public function index(Request $request)
     {
+        $response = $this->economyContract->search($request->all());
 
-        try {
-            $response = $this->economyContract->search($request->all());
-            return (new EconomyResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
+        return response()->json($response, Response::HTTP_OK);
     }
 
     public function grossAnnualEconomy(Request $request): JsonResponse
     {
-        try {
-            $response = $this->economyContract->getGrossAnnualEconomy($request->all());
-            return (new EconomyResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $response = $this->economyContract->getGrossAnnualEconomy($request->all());
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     public function grossMonthlyEconomy(Request $request): JsonResponse
     {
-        try {
-            $response = $this->economyContract->getGrossMonthlyEconomy($request->all());
-            return (new EconomyResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+
+        $response = $this->economyContract->getGrossMonthlyEconomy($request->all());
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     public function captiveMonthlyEconomy(Request $request): JsonResponse
     {
-        try {
-            $response = $this->economyContract->getCaptiveMonthlyEconomy($request->all());
-            return (new EconomyResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $response = $this->economyContract->getCaptiveMonthlyEconomy($request->all());
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     public function costMWhEconomy(Request $request): JsonResponse
     {
-        try {
-            $response = $this->economyContract->getCostMWhEconomy($request->all());
-            return (new EconomyResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+        $response = $this->economyContract->getCostMWhEconomy($request->all());
 
+        return response()->json($response, Response::HTTP_OK);
+    }
 }

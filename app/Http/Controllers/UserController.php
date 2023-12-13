@@ -34,14 +34,11 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        try {
-            $response = $this->user->getOrdered();
-            return (new UserResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $response = $this->user->getOrdered();
+
+        return (new UserResource($response))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
     /**
@@ -52,25 +49,22 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        try {
-            $data = $request->all();
-            $data['password'] = bcrypt($request->password);
+        $data = $request->all();
+        $data['password'] = $request->password;
 
-            if (!$request->hasFile('profile_picture')) {
-                return $this->errorResponse(false, '', 500);
-            }
-            $file = $request->file('profile_picture');
-            $path = $file->storeAs('avatars', $file->hashName(), 's3');
-
-            $data['profile_picture'] =  Storage::disk('s3')->url($path);
-            $response = $this->user->create($data);
-            $response->roles()->sync($data['role']);
-            return (new UserResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_CREATED);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        if (!$request->hasFile('profile_picture')) {
+            return $this->errorResponse(false, '', 500);
         }
+        $file = $request->file('profile_picture');
+        $path = $file->storeAs('avatars', $file->hashName(), 's3');
+
+        $data['profile_picture'] =  Storage::disk('s3')->url($path);
+        $response = $this->user->create($data);
+        $response->roles()->sync($data['role']);
+
+        return (new UserResource($response))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -81,14 +75,11 @@ class UserController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        try {
-            $response = $this->user->find($id);
-            return (new UserResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_OK);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $response = $this->user->find($id);
+
+        return (new UserResource($response))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
     /**
@@ -100,16 +91,13 @@ class UserController extends Controller
      */
     public function update(Request $request, $id): JsonResponse
     {
-        try {
-            $data = $request->all();
-            $data['password'] = bcrypt($request->password);
-            $response = $this->user->update($data, $id);
-            return (new UserResource($response))
-                ->response()
-                ->setStatusCode(Response::HTTP_ACCEPTED);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $data = $request->all();
+        $data['password'] = $request->password;
+        $response = $this->user->update($data, $id);
+
+        return (new UserResource($response))
+            ->response()
+            ->setStatusCode(Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -120,12 +108,9 @@ class UserController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        try {
-            $response = $this->user->destroy($id);
-            return response()->json($response, Response::HTTP_NO_CONTENT);
-        } catch (\Exception $ex) {
-            return $this->errorResponse(false, $ex->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $response = $this->user->destroy($id);
+        
+        return response()->json($response, Response::HTTP_NO_CONTENT);
     }
 
     public function importUserControll(ImportUsersWithSmartUsersRequest $request): JsonResponse

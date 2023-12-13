@@ -15,19 +15,19 @@ class UserTableSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->create([
-            'client_id'      => null,
-            'name'           => 'Admin',
-            'email'          => 'admin@admin.com',
-            'password'       => bcrypt('password'),
-            'remember_token' => null,
-        ]);
+        // User::query()->create([
+        //     'client_id'      => null,
+        //     'name'           => 'Admin',
+        //     'email'          => 'admin@admin.com',
+        //     'password'       => 'password',
+        //     'remember_token' => null,
+        // ]);
 
         User::query()->create([
             'client_id'      => null,
             'name'           => 'Admin',
             'email'          => 'admin2@admin.com',
-            'password'       => bcrypt('password'),
+            'password'       => 'password',
             'remember_token' => null,
         ]);
 
@@ -35,7 +35,7 @@ class UserTableSeeder extends Seeder
             'client_id'      => 180103211,
             'name'           => 'Client',
             'email'          => 'client@client.com',
-            'password'       => bcrypt('password'),
+            'password'       => 'password',
             'remember_token' => null,
         ]);
     }
