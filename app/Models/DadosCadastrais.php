@@ -31,6 +31,7 @@ class DadosCadastrais extends Model implements Auditing
         'status_unidade',
         'data_de_migracao',
         'cod_smart_cliente',
+        'cod_smart_unidade',
         'created_at',
         'updated_at',
         'deleted_at',

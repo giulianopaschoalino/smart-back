@@ -9,9 +9,10 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 use Laravel\Sanctum\Exceptions\MissingAbilityException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -47,7 +48,7 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-        private function messageCustom(\Throwable $ex): array
+    private function messageCustom(\Throwable $ex): array
     {
 
         $messageCustom = [];
@@ -94,8 +95,8 @@ class Handler extends ExceptionHandler
                     : 'Internal server error',
                 Response::HTTP_INTERNAL_SERVER_ERROR
             ],
-            
-            MissingAbilityException::class => fn($_) => [
+
+            MissingAbilityException::class => fn ($_) => [
                 'Unauthorized',
                 Response::HTTP_UNAUTHORIZED
             ]
@@ -117,6 +118,8 @@ class Handler extends ExceptionHandler
         return $messageCustom;
     }
 
+
+
     /**
      * Register the exception handling callbacks for the application.
      *
@@ -125,7 +128,13 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (\Throwable $ex) {
-           
+            $message = "Message: {$ex->getMessage()} {n} Line: {$ex->getLine()} {n} File: {$ex->getFile()}{n}Track: {$ex->getTraceAsString()} {n} {n}";
+
+            $message = preg_replace("/\{n\}/", PHP_EOL, $message);
+
+            Log::error($message);
+
+            return false;
         });
     }
 

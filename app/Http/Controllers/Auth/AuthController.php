@@ -21,10 +21,9 @@ class AuthController extends Controller
             abort(401, 'Inavalid Credentials');
         }
 
-        $user = User::with('roles')->firstWhere('email', $credentials['email']);
-        $role = $user->roles()->first();
+        $user = User::with('roles')->where('email', $credentials['email'])->firstOrFail();
 
-        $token = $user->createToken('API Token', [$role->name]);
+        $token = $user->createToken('API Token', $user->roles->pluck('name')->toArray());
 
         return response()->json([
             'token' => $token->plainTextToken,
