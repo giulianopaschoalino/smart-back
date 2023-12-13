@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseJson;
 use App\Http\Requests\ImportUsersWithSmartUsersRequest;
 use App\Traits\ApiResponse;
-use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Imports\UsersWithSmartUsersImport;
 use App\Repositories\Users\UserContractInterface;
@@ -36,9 +36,7 @@ class UserController extends Controller
     {
         $response = $this->user->getOrdered();
 
-        return (new UserResource($response))
-            ->response()
-            ->setStatusCode(Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 
     /**
@@ -62,9 +60,7 @@ class UserController extends Controller
         $response = $this->user->create($data);
         $response->roles()->sync($data['role']);
 
-        return (new UserResource($response))
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
+        return ResponseJson::data($response, Response::HTTP_CREATED);
     }
 
     /**
@@ -77,9 +73,7 @@ class UserController extends Controller
     {
         $response = $this->user->find($id);
 
-        return (new UserResource($response))
-            ->response()
-            ->setStatusCode(Response::HTTP_OK);
+        return ResponseJson::data($response);
     }
 
     /**
@@ -95,9 +89,7 @@ class UserController extends Controller
         $data['password'] = $request->password;
         $response = $this->user->update($data, $id);
 
-        return (new UserResource($response))
-            ->response()
-            ->setStatusCode(Response::HTTP_ACCEPTED);
+        return ResponseJson::data($response);
     }
 
     /**
@@ -109,7 +101,7 @@ class UserController extends Controller
     public function destroy($id): JsonResponse
     {
         $response = $this->user->destroy($id);
-        
+
         return response()->json($response, Response::HTTP_NO_CONTENT);
     }
 
@@ -134,9 +126,7 @@ class UserController extends Controller
                 disk: $disk,
             );
 
-            return response()
-                ->json(['message' => 'Dados importados com sucesso!'])
-                ->setStatusCode(Response::HTTP_CREATED);
+            return ResponseJson::message('Dados importados com sucesso!', Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             throw $th;
         } finally {
