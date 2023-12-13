@@ -17,7 +17,9 @@ class NotificationRepository extends AbstractRepository implements NotificationC
 
     public function getNotify(): int
     {
-       return Notifications::query()->with('users')
-           ->whereRelation('users', 'id', '=', auth()->id())->count();
+        return Notifications::query()
+            ->with('users')
+            ->whereRelation('users', 'id', '=', auth()->id())
+            ->count();
     }
 }
