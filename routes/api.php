@@ -1,4 +1,6 @@
 <?php
+
+use App\Mail\TempMail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -11,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('test', fn() => new TempMail('Marcio', '123', false));
 
 Route::prefix('auth')->group(function (){
     Route::post('login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
@@ -85,7 +89,7 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
 
 /* --- Routes Admin and Client --- */
 Route::middleware(['auth:sanctum', 'ability:Admin,Client'])->group(function() {
-    Route::post('logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
+    Route::post('auth/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
 
 Route::post('import', [\App\Http\Controllers\UserController::class, 'importUserControll']);

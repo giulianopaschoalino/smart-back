@@ -62,6 +62,7 @@ class NotificationController extends Controller
     {
         $response = $this->notification->getNotify();
 
+        // return ResponseJson::data($response);
         return response()->json($response);
     }
 }

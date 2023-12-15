@@ -40,7 +40,8 @@ class PldController extends Controller
     {
         $response = $this->pldContract->getListConsumption($request->all());
 
-        return ResponseJson::data($response);
+        // return ResponseJson::data($response);
+        return response()->json($response);
     }
 
     public function consumptionByDaily(Request $request)

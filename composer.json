@@ -60,19 +60,19 @@
         ],
         "cached": [
             "@php artisan optimize --ansi",
-            "@php artisan view:clear --ansi",
+            "@php artisan config:cache --ansi",
+            "@php artisan route:cache --ansi",
             "@php artisan view:cache --ansi",
-            "@php artisan route:clear --ansi",
-            "@php artisan event:cache --ansi"
+            "@php artisan event:cache --ansi",
+            "@php artisan package:discover --ansi"
         ],
         "clear-cached": [
-            "@php artisan optimize:clear",
+            "@php artisan optimize:clear --ansi",
             "@php artisan cache:clear --ansi",
             "@php artisan view:clear --ansi",
             "@php artisan route:clear --ansi",
             "@php artisan event:clear --ansi",
-            "@php artisan config:clear --ansi",
-            "@php artisan schedule:clear-cache --ansi"
+            "@php artisan config:clear --ansi"
         ],
         "authorized-files": "sudo chown -R www-data:www-data storage/ bootstrap/cache/ public/ && sudo chown -R :www-data storage/",
         "dev": "@php artisan serve --host=0.0.0.0 --port=8080 --ansi"
