@@ -7,14 +7,11 @@ namespace App\Repositories\Economy;
 use App\Helpers\Helpers;
 use App\Models\Economy;
 use App\Repositories\AbstractRepository;
-use Carbon\Carbon;
-use DateInterval;
-use DatePeriod;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class EconomyRepository extends AbstractRepository implements EconomyContractInterface
 {
@@ -48,8 +45,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
         ];
 
         return $this->execute($params, $field)
-            ->where(DB::raw(
-                "TO_DATE(economia.mes, 'YYMM')"),
+            ->where(
+                DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '1' year"))
             ->where(function ($query) {

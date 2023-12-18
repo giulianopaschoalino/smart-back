@@ -25,7 +25,7 @@ $users = [
     ['client_id' => '180119211', 'email' => 'financeiro@novakcarnes.com.br', 'password' => 'PBB*q60X'],
     ['client_id' => '180120211', 'email' => 'david@granortesa.ind.br', 'password' => '5liE2$rp'],
     ['client_id' => '180121211', 'email' => 'marcio.grutzmacher@hame.com.br', 'password' => 'UgReGotP'],
-    ['client_id' => '180122211', 'email' => 'willian@herbarium.net',    '@%by5Dup'],
+    ['client_id' => '180122211', 'email' => 'willian@herbarium.net',  'password' => '@%by5Dup'],
     ['client_id' => '180123211', 'email' => 'fabiatavares@hsmonica.com', 'password' => '%hCOQGo8'],
     ['client_id' => '180124211', 'email' => 'kelston@jjpplasticos.com.br', 'password' => 'ZbRztLMb'],
     ['client_id' => '180125211', 'email' => 'ronaldo@kabel.com.br', 'password' => '0N3ZN4Xd'],

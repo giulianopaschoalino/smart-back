@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('test', fn() => new TempMail('Marcio', '123', false));
-
 Route::prefix('auth')->group(function (){
     Route::post('login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
     Route::post('/forgot-password', \App\Http\Controllers\Auth\ForgotPasswordController::class);
