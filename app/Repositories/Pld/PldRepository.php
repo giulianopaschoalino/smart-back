@@ -213,11 +213,11 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     }
 
     protected static function max($query){
-        return $query->max(DB::raw("value"));
+        return $query->max(DB::raw("value")) ?? 0;
     }
 
     protected static function min($query){
-        return $query->min(DB::raw("value"));
+        return $query->min(DB::raw("value")) ?? 0;
     }
 
     protected static function standardDeviation($query): float|bool

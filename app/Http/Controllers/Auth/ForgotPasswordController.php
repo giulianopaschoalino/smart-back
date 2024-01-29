@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Mail\ResetPassword;
 use App\Models\User;
-use App\Traits\ApiResponse;
+
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class ForgotPasswordController extends Controller
 {
-    use ApiResponse;
+    
 
     public function __invoke(ForgotPasswordRequest $request)
     {
@@ -25,7 +25,7 @@ class ForgotPasswordController extends Controller
 
         $is_email = User::where('email', $email)->exists();
 
-        if (!$is_email) return ResponseJson::error(
+        if (!$is_email) return ResponseJsonMessage::withError(
             'Esse e-mail não existe no nosso sistema',
             Response::HTTP_BAD_REQUEST
         );
@@ -43,7 +43,7 @@ class ForgotPasswordController extends Controller
 
         Mail::to($email)->send(new ResetPassword($token));
 
-        return ResponseJson::message("Verifique seu e-mail");
+        return ResponseJsonMessage::withMessage("Verifique seu e-mail");
     }
 
 

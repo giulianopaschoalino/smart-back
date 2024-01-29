@@ -21,7 +21,7 @@ Route::prefix('auth')->group(function (){
 });
 
 /* --- Routes verified --- */
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum', 'ability:Client', 'verified'])->group(function () {
     Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
     Route::get('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'show']);
 
@@ -58,7 +58,6 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
 
 /* --- Routes Client --- */
 Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
-
     Route::post('pld/overview', [\App\Http\Controllers\PldController::class, 'overviewByRegion']); //Visão Geral por Região
     Route::post('pld/list', [\App\Http\Controllers\PldController::class, 'listConsumption']); // Tabela de Consumo
     Route::post('pld/daily', [\App\Http\Controllers\PldController::class, 'consumptionByDaily']); // Consumo por Diário

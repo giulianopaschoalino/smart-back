@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginResquest;
 
@@ -43,6 +43,6 @@ class AuthController extends Controller
 
         $user?->currentAccessToken()?->delete();
 
-        return ResponseJson::message('Token Revoked.');
+        return ResponseJsonMessage::withMessage('Token Revoked.');
     }
 }

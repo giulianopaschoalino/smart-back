@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 use App\Http\Requests\ImportUsersWithSmartUsersRequest;
-use App\Traits\ApiResponse;
+
 use App\Http\Requests\StoreUserRequest;
 use App\Imports\UsersWithSmartUsersImport;
 use App\Repositories\Users\UserContractInterface;
@@ -20,8 +20,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
-    use ApiResponse;
-
     public function __construct(
         protected UserContractInterface $user
     ) {
@@ -36,7 +34,7 @@ class UserController extends Controller
     {
         $response = $this->user->getOrdered();
 
-        return ResponseJson::data($response);
+        return ResponseJsonMessage::withData($response);
     }
 
     /**
@@ -60,7 +58,7 @@ class UserController extends Controller
         $response = $this->user->create($data);
         $response->roles()->sync($data['role']);
 
-        return ResponseJson::data($response, Response::HTTP_CREATED);
+        return ResponseJsonMessage::withData($response, Response::HTTP_CREATED);
     }
 
     /**
@@ -73,7 +71,7 @@ class UserController extends Controller
     {
         $response = $this->user->find($id);
 
-        return ResponseJson::data($response);
+        return ResponseJsonMessage::withData($response);
     }
 
     /**
@@ -89,7 +87,7 @@ class UserController extends Controller
         $data['password'] = $request->password;
         $response = $this->user->update($data, $id);
 
-        return ResponseJson::data($response);
+        return ResponseJsonMessage::withData($response);
     }
 
     /**
@@ -100,9 +98,9 @@ class UserController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        $response = $this->user->destroy($id);
+        $this->user->destroy($id);
 
-        return response()->json($response, Response::HTTP_NO_CONTENT);
+        return ResponseJsonMessage::withMessage('Usuário deletado!');
     }
 
     public function importUserControll(ImportUsersWithSmartUsersRequest $request): JsonResponse
@@ -126,7 +124,7 @@ class UserController extends Controller
                 disk: $disk,
             );
 
-            return ResponseJson::message('Dados importados com sucesso!', Response::HTTP_CREATED);
+            return ResponseJsonMessage::withMessage('Dados importados com sucesso!', Response::HTTP_CREATED);
         } catch (\Throwable $th) {
             throw $th;
         } finally {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -29,6 +29,6 @@ class NewsController extends Controller
                 )
             );
 
-        return ResponseJson::data($resource);
+        return ResponseJsonMessage::withData($resource);
     }
 }

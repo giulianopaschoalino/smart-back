@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 use App\Http\Requests\UploadInfoSectorialRequest;
 use App\Models\InfoSectorial;
-use App\Traits\ApiResponse;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class InfoSectorialController extends Controller
 {
-    use ApiResponse;
+    
 
     public function updateFile(UploadInfoSectorialRequest $uploadInfoSectorialRequest)
     {
@@ -39,7 +39,7 @@ class InfoSectorialController extends Controller
 
         $data = InfoSectorial::where('created_at', '=', $created_at)->first();
 
-        return ResponseJson::data(
+        return ResponseJsonMessage::withData(
             !empty($data) ? Storage::disk('s3')->url($data->path) : ''
         );
     }

@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 use App\Http\Requests\StoreAboutUsRequest;
-use App\Http\Resources\AboutUsResource;
 use App\Repositories\AboutUs\AboutUsContractInterface;
-use App\Traits\ApiResponse;
-
-use Illuminate\Http\Response;
 
 class AboutUsController extends Controller
 {
-    use ApiResponse;
+    
 
     public function __construct(
         protected AboutUsContractInterface $aboutUsContract
@@ -25,7 +21,7 @@ class AboutUsController extends Controller
     {
         $response = $this->aboutUsContract->all();
 
-        return ResponseJson::data($response);
+        return ResponseJsonMessage::withData($response);
     }
 
 
@@ -40,6 +36,6 @@ class AboutUsController extends Controller
             $response = $this->aboutUsContract->create($aboutUsRequest->validated());
         }
 
-        return ResponseJson::data($response);
+        return ResponseJsonMessage::withData($response);
     }
 }
