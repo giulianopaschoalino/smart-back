@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('auth')->group(function (){
+Route::prefix('auth')->group(function () {
     Route::post('login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
     Route::post('/forgot-password', \App\Http\Controllers\Auth\ForgotPasswordController::class);
     Route::post('/reset-password', \App\Http\Controllers\Auth\ResetPasswordController::class);
@@ -22,17 +22,10 @@ Route::prefix('auth')->group(function (){
 
 /* --- Routes verified --- */
 Route::middleware(['auth:sanctum', 'ability:Client', 'verified'])->group(function () {
-    Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
-    Route::get('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'show']);
-
-    Route::get('faq', [\App\Http\Controllers\FaqController::class, 'index']);
-    Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
-
     Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
 
     Route::post('units', [\App\Http\Controllers\ClientController::class, 'index']);
 
-    Route::get('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'index']);
 
     Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
@@ -81,11 +74,18 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
     Route::post('notify', [\App\Http\Controllers\NotificationController::class, 'notify']);
 
     Route::get('news', [\App\Http\Controllers\NewsController::class, 'send']);
-
 });
 
 /* --- Routes Admin and Client --- */
-Route::middleware(['auth:sanctum', 'ability:Admin,Client'])->group(function() {
+Route::middleware(['auth:sanctum', 'ability:Admin,Client'])->group(function () {
+    Route::get('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'index']);
+
+    Route::get('faq', [\App\Http\Controllers\FaqController::class, 'index']);
+    Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
+
+    Route::get('notification', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::get('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'show']);
+
     Route::post('auth/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
 
