@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.11",
         "laravel/sanctum": "^2.14.1",
+        "laravel/telescope": "^4.17",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
         "maatwebsite/excel": "^3.1",
@@ -52,7 +53,7 @@
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
-        "post-root-package-install": [
+        "create-env": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "generate-key": [
@@ -60,22 +61,24 @@
         ],
         "cached": [
             "@php artisan optimize --ansi",
-            "@php artisan view:clear --ansi",
+            "@php artisan config:cache --ansi",
+            "@php artisan route:cache --ansi",
             "@php artisan view:cache --ansi",
-            "@php artisan route:clear --ansi",
-            "@php artisan event:cache --ansi"
+            "@php artisan event:cache --ansi",
+            "@php artisan package:discover --ansi"
         ],
         "clear-cached": [
-            "@php artisan optimize:clear",
+            "@php artisan optimize:clear --ansi",
             "@php artisan cache:clear --ansi",
             "@php artisan view:clear --ansi",
             "@php artisan route:clear --ansi",
             "@php artisan event:clear --ansi",
-            "@php artisan config:clear --ansi",
-            "@php artisan schedule:clear-cache --ansi"
+            "@php artisan config:clear --ansi"
         ],
-        "authorized-files": "sudo chown -R www-data:www-data storage/ bootstrap/cache/ public/ && sudo chown -R :www-data storage/",
-        "dev": "@php artisan serve --host=0.0.0.0 --port=8080 --ansi"
+        "queue": "@php artisan queue:listen --tries=2 --backoff=10 --timeout=60",
+        "schedule": "@php artisan schedule:work",
+        "authorized-files": "sudo chown -R www-data:www-data storage/ storage/framework/cache storage/framework/cache/data bootstrap/cache/ public/ && sudo chown -R :www-data storage/",
+        "dev": "@php artisan serve --host=0.0.0.0 --port=8181"
     },
     "extra": {
         "laravel": {

@@ -213,20 +213,23 @@ class PldRepository extends AbstractRepository implements PldContractInterface
     }
 
     protected static function max($query){
-        return $query->max(DB::raw("value"));
+        return $query->max(DB::raw("value")) ?? 0;
     }
 
     protected static function min($query){
-        return $query->min(DB::raw("value"));
+        return $query->min(DB::raw("value")) ?? 0;
     }
 
     protected static function standardDeviation($query): float|bool
     {
-        $array = $query->addSelect([
-            DB::raw("AVG(valor)as desv_pad")
-        ])->get()->toArray();
+        /**
+         * @var \Illuminate\Support\Collection $devs_pad
+         */
+        $devs_pad = $query->addSelect([
+            DB::raw("AVG(valor) as desv_pad")
+        ])->get();
 
-        return stats_standard_deviation(collect($array)->pluck('desv_pad')->all());
+        return $devs_pad->count() > 2 ?  \stats_standard_deviation($devs_pad->pluck('desv_pad')->toArray()) : 0;
     }
 
 }

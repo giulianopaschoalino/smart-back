@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Helpers\ResponseJson;
+use App\Helpers\ResponseJsonMessage;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\QueryException;
@@ -51,13 +51,12 @@ class Handler extends ExceptionHandler
 
     private function messageCustom(\Throwable $ex): array
     {
-
         $messageCustom = [];
 
         $class_exceptions = [
             AuthorizationException::class => fn ($e) => [
-                'Unauthorized',
-                Response::HTTP_UNAUTHORIZED
+                'Forbidden',
+                Response::HTTP_FORBIDDEN
             ],
 
             AuthenticationException::class => fn ($e) => [
@@ -115,7 +114,6 @@ class Handler extends ExceptionHandler
             ];
         }
 
-
         return $messageCustom;
     }
 
@@ -135,7 +133,7 @@ class Handler extends ExceptionHandler
 
             Log::error($message);
 
-            return false;
+            return false; //https://laravel.com/docs/9.x/errors#reporting-exceptions
         });
     }
 
@@ -150,6 +148,6 @@ class Handler extends ExceptionHandler
     {
         [$message, $status_code] = $this->messageCustom($ex);
 
-        return ResponseJson::error($message, $status_code);
+        return ResponseJsonMessage::withError($message, $status_code);
     }
 }

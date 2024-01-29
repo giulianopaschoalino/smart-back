@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
+use App\Helpers\ResponseJsonMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Models\User;
-use App\Traits\ApiResponse;
-use Carbon\Carbon;
+
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
-    use ApiResponse;
+    
 
     public function __invoke(ResetPasswordRequest $resetPasswordRequest)
     {
@@ -24,11 +24,12 @@ class ResetPasswordController extends Controller
         if ($check->exists()) {
 
             $difference = Carbon::now()->diffInSeconds($check->first()->created_at);
+
             if ($difference > 3600) {
-                return $this->errorResponse(false, "Token Expired", 400);
+                return ResponseJsonMessage::withError("Token Expired", 400);
             }
 
-            $delete = DB::table('password_resets')->where([
+            DB::table('password_resets')->where([
                 ['email', $resetPasswordRequest->email],
                 ['token', $resetPasswordRequest->token],
             ])->delete();
@@ -39,11 +40,7 @@ class ResetPasswordController extends Controller
                 'password' => $resetPasswordRequest->password
             ]);
 
-            return $this->successResponse([
-                'user' => $user
-            ],
-                "You can now reset your password",
-                200);
+            ResponseJsonMessage::withData($user);
 
         } else {
             return $this->errorResponse(false, "Invalid token", 401);
