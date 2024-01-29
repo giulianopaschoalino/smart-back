@@ -72,13 +72,19 @@ class UsersWithSmartUsersImport implements ToCollection
             ? $this->files_paths[$client_id]
             : '';
 
-        User::create(\compact(
+
+        /**
+         * @var ?\App\Models\User $user
+         */
+        $user = User::create(\compact(
             'client_id',
             'name',
             'email',
             'password',
             'profile_picture'
         ));
+
+        $user?->roles()?->sync([2]);
     }
 
     private function createSmartUserAccess(Collection $row, DadosCadastrais $client, string $email): void
@@ -90,13 +96,18 @@ class UsersWithSmartUsersImport implements ToCollection
             ? $this->files_paths[$client_id]
             : '';
 
-        User::create(\compact(
+        /**
+         * @var ?\App\Models\User $user
+         */
+        $user = User::create(\compact(
             'client_id',
             'name',
             'email',
             'password',
             'profile_picture'
         ));
+
+        $user?->roles()?->sync([2]);
     }
 
     private function uploadProfilePictures()
