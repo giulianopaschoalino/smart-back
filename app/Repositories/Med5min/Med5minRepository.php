@@ -247,19 +247,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                     DB::raw("
                     CASE 
                         WHEN (SUM(med_5min.ativa_consumo - med_5min.ativa_geracao) = 0 AND SUM(med_5min.reativa_consumo - med_5min.reativa_geracao) = 0) THEN NULL
-                        WHEN SUM(med_5min.reativa_consumo - med_5min.reativa_geracao) > 0 THEN 
+                        ELSE 
                             ABS(SUM(med_5min.ativa_consumo - med_5min.ativa_geracao)) / 
                             SQRT(POWER(SUM(med_5min.ativa_consumo - med_5min.ativa_geracao), 2) + POWER(SUM(med_5min.reativa_consumo - med_5min.reativa_geracao), 2))
-                        ELSE NULL
                     END as fp_indutivo"),
-                    DB::raw("
-                    CASE 
-                        WHEN (SUM(med_5min.ativa_consumo - med_5min.ativa_geracao) = 0 AND SUM(med_5min.reativa_consumo - med_5min.reativa_geracao) = 0) THEN NULL
-                        WHEN SUM(med_5min.reativa_consumo - med_5min.reativa_geracao) < 0 THEN 
-                            ABS(SUM(med_5min.ativa_consumo - med_5min.ativa_geracao)) / 
-                            SQRT(POWER(SUM(med_5min.ativa_consumo - med_5min.ativa_geracao), 2) + POWER(SUM(med_5min.reativa_consumo - med_5min.reativa_geracao), 2))
-                        ELSE NULL
-                    END as fp_capacitivo"),
                     DB::raw("0.92 as f_ref")
                 ];
 
