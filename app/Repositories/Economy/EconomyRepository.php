@@ -48,7 +48,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->where(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
-                DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '1' year"))
+                DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '2' year"))
             ->where(function ($query) {
                 $query->where(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"), '=', 12)
                     ->orWhere(function ($query) {
@@ -90,7 +90,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->where('dados_cadastrais.codigo_scde', '!=', '0P')
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
-                DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-01-01'), 'YYYY-MM-DD')"))
+                DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-01-01'), 'YYYY-MM-DD') - interval '2' year"))
             ->where(DB::raw("TO_DATE(economia.mes, 'YYMM')"),
             "<=",
             DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD')"))
@@ -121,10 +121,10 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->whereBetween(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 [
-                    DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"),
+                    DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '2' year"),
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
-            ->whereRaw("TO_DATE(economia.mes, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '0' year")
+            // ->whereRaw("TO_DATE(economia.mes, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '0' year")
             ->groupBy(['mes', 'dad_estimado'])
             ->havingRaw("sum(custo_livre) > 0")
             ->orderBy(DB::raw("mes, dad_estimado"))
@@ -146,7 +146,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->whereBetween(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 [
-                    DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '1' year"),
+                    DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '2' year"),
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-12-31'), 'YYYY-MM-DD') ")
                 ])
             ->groupBy(['mes', 'dad_estimado'])
