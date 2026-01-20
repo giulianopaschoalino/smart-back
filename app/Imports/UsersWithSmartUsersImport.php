@@ -48,7 +48,7 @@ class UsersWithSmartUsersImport implements ToCollection
                 ->lower()
                 ->replace(" ", "");
 
-            $email = "cli_{$client_name_format}@energiasmart.com.br";
+            $email = "cli_{$client_name_format}@smartenergia.com.br";
 
             $user_exists = User::where('email', $email_user)->exists();
             $user_smart_exists = User::where('email', $email)->exists();

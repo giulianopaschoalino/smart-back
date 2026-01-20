@@ -58,7 +58,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     {
         Gate::define('viewTelescope', function () {
             return in_array(request()->query('email'), [
-                'smart_admin_monitor@energiasmart.com.br'
+                'smart_admin_monitor@smartenergia.com.br'
             ]);
         });
     }
