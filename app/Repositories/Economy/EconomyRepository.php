@@ -41,7 +41,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             DB::raw("SUM(economia.economia_mensal)/1000 as economia_acumulada_a"),
             DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_cativo)) as econ_percentual"),
-            "economia.dad_estimado"
+            DB::raw("CASE WHEN extract(month from TO_DATE(economia.mes, 'YYMM')) = 12 THEN economia.dad_estimado ELSE true END as dad_estimado")
         ];
 
         // Query to find the last fully consolidated year (December with dad_estimado = false)
@@ -64,9 +64,10 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '2' year"))
-            ->where(function ($query) {
+            ->where(function ($query) use ($lastConsolidatedYearQuery) {
                 $query->where(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"), '=', 12)
                     ->orWhere(function ($query) {
+                        // Latest month in current year
                         $query->where(DB::raw("extract(year from TO_DATE(economia.mes, 'YYMM'))"), '=', DB::raw('extract(year from NOW())'))
                             ->whereIn(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"),
                                 DB::table('economia')
@@ -83,6 +84,34 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                                             ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
                                     )
                             );
+                    })
+                    ->orWhere(function ($query) use ($lastConsolidatedYearQuery) {
+                        // Latest month in year after last consolidated year (if not current year)
+                        $query->whereRaw(
+                            "extract(year from TO_DATE(economia.mes, 'YYMM')) = COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 1",
+                            $lastConsolidatedYearQuery->getBindings()
+                        )
+                        ->whereRaw(
+                            "extract(year from TO_DATE(economia.mes, 'YYMM')) != extract(year from NOW())"
+                        )
+                        ->whereIn(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"),
+                            function($subquery) use ($lastConsolidatedYearQuery) {
+                                $subquery->select(DB::raw("max(extract(month from TO_DATE(mes, 'YYMM')))"))
+                                    ->from('economia')
+                                    ->where('dad_estimado', '=', false)
+                                    ->whereRaw(
+                                        "extract(year from TO_DATE(mes, 'YYMM')) = COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 1",
+                                        $lastConsolidatedYearQuery->getBindings()
+                                    )
+                                    ->whereIn(
+                                        'economia.cod_smart_unidade',
+                                        DB::table('dados_cadastrais')
+                                            ->select('cod_smart_unidade')
+                                            ->where('dados_cadastrais.codigo_scde', '!=', '0P')
+                                            ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
+                                    );
+                            }
+                        );
                     });
             })
             // Limit years: last consolidated year .. last consolidated year + 6
