@@ -123,9 +123,9 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                 "CAST(TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') AS INTEGER) <= COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 6",
                 $lastConsolidatedYearQuery->getBindings()
             )
-            ->groupBy(['mes', 'ano', 'dad_estimado'])
+            ->groupBy(['mes', 'ano', DB::raw("CASE WHEN extract(month from TO_DATE(economia.mes, 'YYMM')) = 12 THEN economia.dad_estimado ELSE true END")])
             ->havingRaw("sum(custo_livre) > 0")
-            ->orderBy(DB::raw("mes, ano, dad_estimado"))
+            ->orderBy(DB::raw("ano, dad_estimado"))
             ->get();
     }
 
