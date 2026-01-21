@@ -68,7 +68,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("MOD((med_5min.minuto-5),60) AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+                DB::raw("SUM(med_5min.ativa_geracao) AS geracao"),
+                DB::raw("SUM(med_5min.reativa_consumo) AS reativa_indutiva"),
+                DB::raw("SUM(med_5min.reativa_geracao) AS reativa_capacitiva"),
+                DB::raw("SUM(med_5min.reativa_consumo + med_5min.reativa_geracao) AS reativa")
             ];
 
         if (!is_null($typeField)) {
@@ -97,7 +100,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("((MOD((med_5min.minuto-5),60)/15)+1)*15 AS minut"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+                DB::raw("SUM(med_5min.ativa_geracao) AS geracao"),
+                DB::raw("SUM(med_5min.reativa_consumo) AS reativa_indutiva"),
+                DB::raw("SUM(med_5min.reativa_geracao) AS reativa_capacitiva"),
+                DB::raw("SUM(med_5min.reativa_consumo + med_5min.reativa_geracao) AS reativa")
             ];
 
         if (!is_null($typeField)) {
@@ -124,7 +130,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("((med_5min.minuto-5)/60) AS hora"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+                DB::raw("SUM(med_5min.ativa_geracao) AS geracao"),
+                DB::raw("SUM(med_5min.reativa_consumo) AS reativa_indutiva"),
+                DB::raw("SUM(med_5min.reativa_geracao) AS reativa_capacitiva"),
+                DB::raw("SUM(med_5min.reativa_consumo + med_5min.reativa_geracao) AS reativa")
             ];
 
         if (!is_null($typeField)) {
@@ -149,7 +158,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 'med_5min.dia_num',
                 DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'DD/MM/YYYY') as day_formatted"),
                 DB::raw("SUM(med_5min.ativa_consumo) AS consumo"),
-                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) AS reativa")
+                DB::raw("SUM(med_5min.ativa_geracao) AS geracao"),
+                DB::raw("SUM(med_5min.reativa_consumo) AS reativa_indutiva"),
+                DB::raw("SUM(med_5min.reativa_geracao) AS reativa_capacitiva"),
+                DB::raw("SUM(med_5min.reativa_consumo + med_5min.reativa_geracao) AS reativa")
             ];
 
         if (!is_null($typeField)) {
@@ -202,7 +214,10 @@ class Med5minRepository extends AbstractRepository implements Med5minContractInt
                 "),
                 DB::raw("TO_CHAR((date('1899-12-30') + interval '1' day * med_5min.dia_num), 'MM/YYYY') as day_formatted"),
                 DB::raw("SUM(med_5min.ativa_consumo) As consumo"),
-                DB::raw("SUM(med_5min.reativa_consumo+med_5min.reativa_geracao) As reativa")
+                DB::raw("SUM(med_5min.ativa_geracao) AS geracao"),
+                DB::raw("SUM(med_5min.reativa_consumo) AS reativa_indutiva"),
+                DB::raw("SUM(med_5min.reativa_geracao) AS reativa_capacitiva"),
+                DB::raw("SUM(med_5min.reativa_consumo + med_5min.reativa_geracao) AS reativa")
             ];
 
         if (!is_null($typeField)) {
