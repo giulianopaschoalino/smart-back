@@ -48,28 +48,8 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->where(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
-                DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '2' year"))
-            ->where(function ($query) {
-                $query->where(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"), '=', 12)
-                    ->orWhere(function ($query) {
-                        $query->where(DB::raw("extract(year from TO_DATE(economia.mes, 'YYMM'))"), '=', DB::raw('extract(year from NOW())'))
-                            ->whereIn(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"),
-                                DB::table('economia')
-                                    ->selectRaw(
-                                        "max(extract(month from TO_DATE(mes, 'YYMM')))"
-                                    )
-                                    ->where('dad_estimado', '=', false)
-                                    ->where(DB::raw("extract(year from TO_DATE(mes, 'YYMM'))"), '=', DB::raw('extract(year from NOW())'))
-                                    ->whereIn(
-                                        'economia.cod_smart_unidade',
-                                        DB::table('dados_cadastrais')
-                                            ->select('cod_smart_unidade')
-                                            ->where('dados_cadastrais.codigo_scde', '!=', '0P')
-                                            ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
-                                    )
-                            );
-                    });
-            })
+                DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '24' month"))
+            ->where(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"), '=', 12)
             ->groupBy(['mes', 'ano', 'dad_estimado'])
             ->havingRaw("sum(custo_livre) > 0")
             ->orderBy(DB::raw("mes, ano, dad_estimado"))
