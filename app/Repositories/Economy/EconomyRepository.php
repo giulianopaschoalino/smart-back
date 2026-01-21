@@ -41,33 +41,17 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             DB::raw("SUM(economia.economia_mensal)/1000 as economia_acumulada_a"),
             DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
             DB::raw("(SUM(economia.economia_mensal)/SUM(economia.custo_cativo)) as econ_percentual"),
-            DB::raw("CASE WHEN extract(month from TO_DATE(economia.mes, 'YYMM')) = 12 THEN economia.dad_estimado ELSE true END as dad_estimado")
+            "economia.dad_estimado"
         ];
-
-        // Query to find the last fully consolidated year (December with dad_estimado = false)
-        $lastConsolidatedYearQuery = DB::table('economia')
-            ->select(DB::raw("CAST(TO_CHAR(TO_DATE(mes, 'YYMM'), 'YYYY') AS INTEGER) as last_year"))
-            ->where('dad_estimado', '=', false)
-            ->where(DB::raw("extract(month from TO_DATE(mes, 'YYMM'))"), '=', 12)
-            ->whereIn(
-                'cod_smart_unidade',
-                DB::table('dados_cadastrais')
-                    ->select('cod_smart_unidade')
-                    ->where('dados_cadastrais.codigo_scde', '!=', '0P')
-                    ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
-            )
-            ->orderBy(DB::raw("TO_CHAR(TO_DATE(mes, 'YYMM'), 'YYYY')"), 'desc')
-            ->limit(1);
 
         return $this->execute($params, $field)
             ->where(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
                 DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '2' year"))
-            ->where(function ($query) use ($lastConsolidatedYearQuery) {
+            ->where(function ($query) {
                 $query->where(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"), '=', 12)
                     ->orWhere(function ($query) {
-                        // Latest month in current year
                         $query->where(DB::raw("extract(year from TO_DATE(economia.mes, 'YYMM'))"), '=', DB::raw('extract(year from NOW())'))
                             ->whereIn(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"),
                                 DB::table('economia')
@@ -84,48 +68,11 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                                             ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
                                     )
                             );
-                    })
-                    ->orWhere(function ($query) use ($lastConsolidatedYearQuery) {
-                        // Latest month in year after last consolidated year (if not current year)
-                        $query->whereRaw(
-                            "extract(year from TO_DATE(economia.mes, 'YYMM')) = COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 1",
-                            $lastConsolidatedYearQuery->getBindings()
-                        )
-                        ->whereRaw(
-                            "extract(year from TO_DATE(economia.mes, 'YYMM')) != extract(year from NOW())"
-                        )
-                        ->whereIn(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"),
-                            function($subquery) use ($lastConsolidatedYearQuery) {
-                                $subquery->select(DB::raw("max(extract(month from TO_DATE(mes, 'YYMM')))"))
-                                    ->from('economia')
-                                    ->where('dad_estimado', '=', false)
-                                    ->whereRaw(
-                                        "extract(year from TO_DATE(mes, 'YYMM')) = COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 1",
-                                        $lastConsolidatedYearQuery->getBindings()
-                                    )
-                                    ->whereIn(
-                                        'economia.cod_smart_unidade',
-                                        DB::table('dados_cadastrais')
-                                            ->select('cod_smart_unidade')
-                                            ->where('dados_cadastrais.codigo_scde', '!=', '0P')
-                                            ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
-                                    );
-                            }
-                        );
                     });
             })
-            // Limit years: last consolidated year .. last consolidated year + 6
-            ->whereRaw(
-                "CAST(TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') AS INTEGER) >= COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER))",
-                $lastConsolidatedYearQuery->getBindings()
-            )
-            ->whereRaw(
-                "CAST(TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') AS INTEGER) <= COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 6",
-                $lastConsolidatedYearQuery->getBindings()
-            )
-            ->groupBy(['mes', 'ano', DB::raw("CASE WHEN extract(month from TO_DATE(economia.mes, 'YYMM')) = 12 THEN economia.dad_estimado ELSE true END")])
+            ->groupBy(['mes', 'ano', 'dad_estimado'])
             ->havingRaw("sum(custo_livre) > 0")
-            ->orderBy(DB::raw("ano, dad_estimado"))
+            ->orderBy(DB::raw("mes, ano, dad_estimado"))
             ->get();
     }
 
@@ -174,7 +121,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             ->whereBetween(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 [
-                    DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '2' year"),
+                    DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - interval '13' month"),
                     DB::raw("TO_DATE(TO_CHAR(current_date, 'YYYY-MM-DD'), 'YYYY-MM-DD') ")
                 ])
             // ->whereRaw("TO_DATE(economia.mes, 'YYMM') >= TO_DATE(TO_CHAR(current_date , 'YYYY-01-01'), 'YYYY-MM-DD') - INTERVAL '0' year")
