@@ -44,7 +44,22 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             "economia.dad_estimado"
         ];
 
-        $result = $this->execute($params, $field)
+        // Query to find the last fully consolidated year (December with dad_estimado = false)
+        $lastConsolidatedYearQuery = DB::table('economia')
+            ->select(DB::raw("CAST(TO_CHAR(TO_DATE(mes, 'YYMM'), 'YYYY') AS INTEGER) as last_year"))
+            ->where('dad_estimado', '=', false)
+            ->where(DB::raw("extract(month from TO_DATE(mes, 'YYMM'))"), '=', 12)
+            ->whereIn(
+                'cod_smart_unidade',
+                DB::table('dados_cadastrais')
+                    ->select('cod_smart_unidade')
+                    ->where('dados_cadastrais.codigo_scde', '!=', '0P')
+                    ->where('dados_cadastrais.cod_smart_cliente', '=', Auth::user()->client_id)
+            )
+            ->orderBy(DB::raw("TO_CHAR(TO_DATE(mes, 'YYMM'), 'YYYY')"), 'desc')
+            ->limit(1);
+
+        return $this->execute($params, $field)
             ->where(
                 DB::raw("TO_DATE(economia.mes, 'YYMM')"),
                 ">=",
@@ -70,57 +85,19 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                             );
                     });
             })
+            // Limit years: last consolidated year .. last consolidated year + 6
+            ->whereRaw(
+                "CAST(TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') AS INTEGER) >= COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER))",
+                $lastConsolidatedYearQuery->getBindings()
+            )
+            ->whereRaw(
+                "CAST(TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') AS INTEGER) <= COALESCE((" . $lastConsolidatedYearQuery->toSql() . "), CAST(TO_CHAR(CURRENT_DATE - INTERVAL '1 year', 'YYYY') AS INTEGER)) + 6",
+                $lastConsolidatedYearQuery->getBindings()
+            )
             ->groupBy(['mes', 'ano', 'dad_estimado'])
             ->havingRaw("sum(custo_livre) > 0")
             ->orderBy(DB::raw("mes, ano, dad_estimado"))
             ->get();
-
-        // Find the last fully consolidated year (December with dad_estimado = false)
-        $lastConsolidatedYear = null;
-        foreach ($result as $item) {
-            if ($item->dad_estimado === false || $item->dad_estimado === 0) {
-                $month = (int)substr($item->mes, -2);
-                if ($month === 12) {
-                    $year = (int)$item->ano;
-                    if ($lastConsolidatedYear === null || $year > $lastConsolidatedYear) {
-                        $lastConsolidatedYear = $year;
-                    }
-                }
-            }
-        }
-
-        // If no consolidated year found, use current year - 1
-        if ($lastConsolidatedYear === null) {
-            $lastConsolidatedYear = (int)date('Y') - 1;
-        }
-
-        // Create result array with sequential years (last consolidated + 6 more years)
-        $sequentialResult = [];
-        for ($year = $lastConsolidatedYear; $year <= $lastConsolidatedYear + 6; $year++) {
-            $yearData = $result->filter(function ($item) use ($year) {
-                return (int)$item->ano === $year;
-            });
-
-            if ($yearData->count() > 0) {
-                foreach ($yearData as $item) {
-                    $sequentialResult[] = $item;
-                }
-            } else {
-                // Fill missing year with estimated data from closest available year
-                $closestData = $result->filter(function ($item) {
-                    return (int)$item->ano > 0;
-                })->sortBy('ano')->last();
-
-                if ($closestData) {
-                    $newItem = clone $closestData;
-                    $newItem->ano = (string)$year;
-                    $newItem->dad_estimado = true;
-                    $sequentialResult[] = $newItem;
-                }
-            }
-        }
-
-        return collect($sequentialResult);
     }
 
     /* Economia bruta mensal */
