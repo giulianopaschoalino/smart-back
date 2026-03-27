@@ -6,13 +6,20 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: windows
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
-      # - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
-      # - name: Check out repository code
-      #   uses: actions/checkout@v4
-      - run: echo "💡 The ${{ gitea.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: Conexão SSH e Deploy
+      - run: echo "[Info] Conectando ao ssh..."
+      - run: |
+          ssh ubuntu@app.dev.smartenergia.com.br << 'EOF'
+            cd /var/www/api
+            git pull
+            sudo php artisan config:clear
+            sudo php artisan cache:clear
+            sudo php artisan config:cache
+            sudo php artisan route:cache
+            sudo php artisan view:cache
+          EOF
+      - run: echo "[Info] Pull request enviado para o servidor de desenvolvimento."
+      - run: echo "[Info] Repositório ${{ gitea.repository }} online para desenvolvimento."
       - name: List files in the repository
         run: |
           ls ${{ gitea.workspace }}
