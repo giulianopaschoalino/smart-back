@@ -6,17 +6,10 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: windows
     steps:
+      - name: Deploy via SSH
       - run: echo "[Info] Conectando ao ssh..."
-      - run: |
-          ssh ubuntu@app.dev.smartenergia.com.br << 'EOF'
-            cd /var/www/api
-            git pull
-            sudo php artisan config:clear
-            sudo php artisan cache:clear
-            sudo php artisan config:cache
-            sudo php artisan route:cache
-            sudo php artisan view:cache
-          EOF
+      - shell: powershell
+      - run: ssh deploy@SEU_IP "cd /home/deploy/repositorio && git pull origin main && docker compose down && docker compose up -d --build"
       - run: echo "[Info] Pull request enviado para o servidor de desenvolvimento."
       - run: echo "[Info] Repositório ${{ gitea.repository }} online para desenvolvimento."
       - run: echo "🍏 This job's status is ${{ job.status }}."
