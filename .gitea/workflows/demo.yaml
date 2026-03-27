@@ -6,7 +6,6 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: windows
     steps:
-      - name: Deploy via SSH
       - run: echo "[Info] Conectando ao ssh..."
       - shell: powershell
       - run: ssh deploy@SEU_IP "cd /home/deploy/repositorio && git pull origin main && docker compose down && docker compose up -d --build"
