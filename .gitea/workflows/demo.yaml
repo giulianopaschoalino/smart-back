@@ -6,7 +6,6 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: windows
     steps:
-      - name: Conexão SSH e Deploy
       - run: echo "[Info] Conectando ao ssh..."
       - run: |
           ssh ubuntu@app.dev.smartenergia.com.br << 'EOF'
@@ -20,7 +19,4 @@ jobs:
           EOF
       - run: echo "[Info] Pull request enviado para o servidor de desenvolvimento."
       - run: echo "[Info] Repositório ${{ gitea.repository }} online para desenvolvimento."
-      - name: List files in the repository
-        run: |
-          ls ${{ gitea.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
