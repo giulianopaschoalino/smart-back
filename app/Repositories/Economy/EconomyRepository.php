@@ -36,7 +36,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
     public function getGrossAnnualEconomy($params): Collection|array
     {
         $field = [
-            "economia.mes",
+            DB::raw("MAX(economia.mes) as mes"),
             DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') as ano"),
             DB::raw("SUM(economia.economia_mensal)/1000 as economia_acumulada_a"),
             DB::raw("SUM(economia.economia_acumulada)/1000 as economia_acumulada"),
@@ -44,15 +44,40 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
             "economia.dad_estimado"
         ];
 
-        return $this->execute($params, $field)
+        $maxMonths = $this->model->newQuery();
+
+        if (!empty($params)) {
+            $maxMonths = static::getFilterBuilder($params)->applyFilter($maxMonths);
+        }
+
+        $maxMonths = $maxMonths
+            ->select([
+            DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY') as ano"),
+            "economia.cod_smart_unidade",
+            "economia.dad_estimado",
+            DB::raw("MAX(economia.mes) as mes"),
+            ])
             ->where(
-                DB::raw("TO_DATE(economia.mes, 'YYMM')"),
-                ">=",
-                DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '24' month"))
-            ->where(DB::raw("extract(month from TO_DATE(economia.mes, 'YYMM'))"), '=', 12)
-            ->groupBy(['mes', 'ano', 'dad_estimado'])
+            DB::raw("TO_DATE(economia.mes, 'YYMM')"),
+            ">=",
+            DB::raw("TO_DATE(TO_CHAR(current_date , 'YYYY-12-01'), 'YYYY-MM-DD') - interval '24' month")
+            )
+            ->groupBy([
+            DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY')"),
+            "economia.cod_smart_unidade",
+            "economia.dad_estimado",
+            ]);
+
+        return $this->execute($params, $field)
+            ->joinSub($maxMonths, 'max_economia', function ($join) {
+            $join->on('economia.mes', '=', 'max_economia.mes')
+                ->on(DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY')"), '=', DB::raw('max_economia.ano'))
+                ->on('economia.cod_smart_unidade', '=', 'max_economia.cod_smart_unidade')
+                ->on('economia.dad_estimado', '=', 'max_economia.dad_estimado');
+            })
+            ->groupBy([DB::raw("TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY')"), 'dad_estimado'])
             ->havingRaw("sum(custo_livre) > 0")
-            ->orderBy(DB::raw("mes, ano, dad_estimado"))
+            ->orderBy(DB::raw("ano, dad_estimado"))
             ->get();
     }
 
