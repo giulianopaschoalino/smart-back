@@ -7,14 +7,7 @@ jobs:
     runs-on: windows
     steps:
       - run: echo "[Info] Conectando ao ssh..."
-      - run: ssh ubuntu@app.dev.smartenergia.com.br
-      - run: cd /var/www/api
-      - run: git pull origin dev
-      - run: sudo php artisan config:clear
-      - run: sudo php artisan cache:clear
-      - run: sudo php artisan config:cache
-      - run: sudo php artisan route:cache
-      - run: sudo php artisan view:cache"
+      - run: ssh ubuntu@app.dev.smartenergia.com.br "cd /var/www/api && git pull origin dev && sudo php artisan config:clear && sudo php artisan cache:clear && sudo php artisan config:cache && sudo php artisan route:cache && sudo php artisan view:cache"
       - run: echo "[Info] Pull request enviado para o servidor de desenvolvimento."
       - run: echo "[Info] Repositório ${{ gitea.repository }} online para desenvolvimento."
       - run: echo "🍏 This job's status is ${{ job.status }}."
