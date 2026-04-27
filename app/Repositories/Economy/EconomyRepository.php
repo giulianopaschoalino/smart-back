@@ -75,7 +75,7 @@ class EconomyRepository extends AbstractRepository implements EconomyContractInt
                 ->on('economia.cod_smart_unidade', '=', 'max_economia.cod_smart_unidade')
                 ->on('economia.dad_estimado', '=', 'max_economia.dad_estimado');
             })
-            ->groupBy(['ano', 'dad_estimado'])
+            ->groupBy(["TO_CHAR(TO_DATE(economia.mes, 'YYMM'), 'YYYY')", 'dad_estimado'])
             ->havingRaw("sum(custo_livre) > 0")
             ->orderBy(DB::raw("ano, dad_estimado"))
             ->get();
