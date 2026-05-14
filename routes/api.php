@@ -34,6 +34,8 @@ Route::middleware(['auth:sanctum', 'ability:Client', 'verified'])->group(functio
 Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::apiResource('user', \App\Http\Controllers\UserController::class);
 
+    Route::get('clients/recent', [\App\Http\Controllers\RecentClientController::class, 'index']);
+
     Route::put('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'update']);
     Route::post('notification', [\App\Http\Controllers\NotificationController::class, 'store']);
     Route::delete('notification/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
