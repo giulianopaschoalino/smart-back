@@ -24,29 +24,32 @@ class RecentClientController extends Controller
                     ->where('personal_access_tokens.tokenable_type', User::class);
             })
             ->whereNotNull('users.client_id')
-            ->selectRaw(
-                "users.client_id as client_id, dados_cadastrais.cliente as name, SUBSTRING_INDEX(GROUP_CONCAT(users.email ORDER BY COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at) DESC SEPARATOR ',') ,',',1) as email, MAX(COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at)) as last_used_at"
-            )
-            ->groupBy('users.client_id', 'dados_cadastrais.cliente')
-            ->orderByDesc(DB::raw('MAX(COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at))'))
+            ->select([
+                'users.client_id as client_id',
+                'dados_cadastrais.cliente as name',
+                'users.email as email',
+                DB::raw('COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at) as last_used_at'),
+            ])
+            ->orderByDesc(DB::raw('COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at)'))
             ->get()
+            ->filter(static fn ($client) => $client->email !== '' && !str_starts_with($client->email, 'cli_'))
             ->groupBy('name')
             ->map(static function ($group, $name) {
-                $clientIds = $group->pluck('client_id')->map(static fn ($clientId) => (int) $clientId)->all();
+                $latestClient = $group
+                    ->sortByDesc('last_used_at')
+                    ->first();
 
-                // choose representative email from first row (rows are ordered by last_used_at desc)
-                $email = (string) ($group->first()->email ?? '');
+                $clientIds = $group->pluck('client_id')->map(static fn ($clientId) => (int) $clientId)->values()->all();
 
                 return [
-                    'client_id' => $clientIds[0],
+                    'client_id' => (int) $latestClient->client_id,
                     'client_ids' => $clientIds,
                     'name' => (string) $name,
-                    'email' => $email,
-                    'last_used_at_raw' => $group->max('last_used_at'),
+                    'email' => (string) $latestClient->email,
+                    'last_used_at_raw' => $latestClient->last_used_at,
                 ];
             })
             ->sortByDesc('last_used_at_raw')
-            ->filter(static fn ($c) => $c['email'] !== '' && !str_starts_with($c['email'], 'cli_'))
             ->take($limit)
             ->values()
             ->map(static fn ($client) => [
