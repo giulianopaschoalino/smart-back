@@ -25,7 +25,7 @@ class RecentClientController extends Controller
             })
             ->whereNotNull('users.client_id')
             ->selectRaw(
-                'users.client_id as client_id, dados_cadastrais.cliente as name, MAX(COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at)) as last_used_at'
+                "users.client_id as client_id, dados_cadastrais.cliente as name, SUBSTRING_INDEX(GROUP_CONCAT(users.email ORDER BY COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at) DESC SEPARATOR ',') ,',',1) as email, MAX(COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at)) as last_used_at"
             )
             ->groupBy('users.client_id', 'dados_cadastrais.cliente')
             ->orderByDesc(DB::raw('MAX(COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at))'))
@@ -34,20 +34,26 @@ class RecentClientController extends Controller
             ->map(static function ($group, $name) {
                 $clientIds = $group->pluck('client_id')->map(static fn ($clientId) => (int) $clientId)->all();
 
+                // choose representative email from first row (rows are ordered by last_used_at desc)
+                $email = (string) ($group->first()->email ?? '');
+
                 return [
                     'client_id' => $clientIds[0],
                     'client_ids' => $clientIds,
                     'name' => (string) $name,
+                    'email' => $email,
                     'last_used_at_raw' => $group->max('last_used_at'),
                 ];
             })
             ->sortByDesc('last_used_at_raw')
+            ->filter(static fn ($c) => $c['email'] !== '' && !str_starts_with($c['email'], 'cli_'))
             ->take($limit)
             ->values()
             ->map(static fn ($client) => [
                 'client_id' => (int) $client['client_id'],
                 'client_ids' => $client['client_ids'],
                 'name' => (string) $client['name'],
+                'email' => (string) $client['email'],
                 'last_used_at' => Carbon::parse($client['last_used_at_raw'])->format('d/m/Y H:i:s'),
             ]);
 
