@@ -8,6 +8,7 @@ use App\Helpers\ResponseJsonMessage;
 use App\Http\Requests\UploadInfoSectorialRequest;
 use App\Models\InfoSectorial;
 
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -35,12 +36,21 @@ class InfoSectorialController extends Controller
 
     public function download()
     {
-        $created_at = InfoSectorial::max('created_at');
+        $data = InfoSectorial::query()->latest('created_at')->first();
 
-        $data = InfoSectorial::where('created_at', '=', $created_at)->first();
+        if ($data === null) {
+            return ResponseJsonMessage::withData('');
+        }
 
-        return ResponseJsonMessage::withData(
-            !empty($data) ? Storage::disk('s3')->url($data->path) : ''
-        );
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('s3');
+
+        try {
+            $temporaryUrl = $disk->temporaryUrl($data->path, now()->addMinutes(15));
+        } catch (\Throwable) {
+            return ResponseJsonMessage::withError('Unable to generate download link', 500);
+        }
+
+        return ResponseJsonMessage::withData($temporaryUrl);
     }
 }
