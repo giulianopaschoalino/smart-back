@@ -11,6 +11,7 @@ use App\Models\InfoSectorial;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class InfoSectorialController extends Controller
 {
@@ -52,6 +53,22 @@ class InfoSectorialController extends Controller
                 return ResponseJsonMessage::withError('Unable to open file for download', 500);
             }
 
+            // Peek the first bytes to detect S3 XML error responses (AccessDenied, NoSuchKey, etc.)
+            $peek = '';
+            try {
+                $peek = stream_get_contents($stream, 2048);
+            } catch (\Throwable) {
+                $peek = '';
+            }
+
+            if ($peek !== null && $peek !== '' && (stripos($peek, '<?xml') !== false || stripos($peek, '<Error') !== false)) {
+                Log::error('S3 returned XML error while reading file', ['path' => $data->path, 'peek' => substr($peek, 0, 2048)]);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+                return ResponseJsonMessage::withError(trim($peek), 500);
+            }
+
             $mime = $disk->mimeType($data->path) ?? 'application/pdf';
             $extension = pathinfo($data->path, PATHINFO_EXTENSION);
             $filename = ($data->name ?? basename($data->path)) . ($extension ? ".{$extension}" : '');
@@ -62,9 +79,13 @@ class InfoSectorialController extends Controller
                 $size = null;
             }
 
-            return response()->stream(function () use ($stream) {
-                fpassthru($stream);
+            return response()->stream(function () use ($stream, $peek) {
+                // First output the peeked bytes, then the remainder of the stream
+                if ($peek !== null && $peek !== '') {
+                    echo $peek;
+                }
                 if (is_resource($stream)) {
+                    fpassthru($stream);
                     fclose($stream);
                 }
             }, 200, array_filter([
