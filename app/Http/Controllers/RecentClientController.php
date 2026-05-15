@@ -33,8 +33,8 @@ class RecentClientController extends Controller
             ->orderByDesc(DB::raw('COALESCE(personal_access_tokens.last_used_at, personal_access_tokens.created_at)'))
             ->get()
             ->filter(static fn ($client) => $client->email !== '' && !str_starts_with($client->email, 'cli_'))
-            ->groupBy('name')
-            ->map(static function ($group, $name) {
+            ->groupBy('email')
+            ->map(static function ($group, $email) {
                 $latestClient = $group
                     ->sortByDesc('last_used_at')
                     ->first();
@@ -44,8 +44,8 @@ class RecentClientController extends Controller
                 return [
                     'client_id' => (int) $latestClient->client_id,
                     'client_ids' => $clientIds,
-                    'name' => (string) $name,
-                    'email' => (string) $latestClient->email,
+                    'name' => (string) $latestClient->name,
+                    'email' => (string) $email,
                     'last_used_at_raw' => $latestClient->last_used_at,
                 ];
             })
