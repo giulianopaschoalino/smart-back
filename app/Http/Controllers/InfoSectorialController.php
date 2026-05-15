@@ -46,11 +46,34 @@ class InfoSectorialController extends Controller
         $disk = Storage::disk('s3');
 
         try {
-            $temporaryUrl = $disk->temporaryUrl($data->path, now()->addMinutes(15));
-        } catch (\Throwable) {
-            return ResponseJsonMessage::withError('Unable to generate download link', 500);
-        }
+            $stream = $disk->readStream($data->path);
 
-        return ResponseJsonMessage::withData($temporaryUrl);
+            if ($stream === false) {
+                return ResponseJsonMessage::withError('Unable to open file for download', 500);
+            }
+
+            $mime = $disk->mimeType($data->path) ?? 'application/pdf';
+            $extension = pathinfo($data->path, PATHINFO_EXTENSION);
+            $filename = ($data->name ?? basename($data->path)) . ($extension ? ".{$extension}" : '');
+            $size = null;
+            try {
+                $size = $disk->size($data->path);
+            } catch (\Throwable) {
+                $size = null;
+            }
+
+            return response()->stream(function () use ($stream) {
+                fpassthru($stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            }, 200, array_filter([
+                'Content-Type' => $mime,
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                'Content-Length' => $size,
+            ]));
+        } catch (\Throwable $e) {
+            return ResponseJsonMessage::withError('Unable to download file', 500);
+        }
     }
 }
