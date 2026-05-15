@@ -25,9 +25,6 @@ Route::middleware(['auth:sanctum', 'ability:Client', 'verified'])->group(functio
     Route::post('pld', [\App\Http\Controllers\PldController::class, 'index']);
 
     Route::post('units', [\App\Http\Controllers\ClientController::class, 'index']);
-
-
-    Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 });
 
 /* --- Routes Admin --- */
@@ -81,6 +78,8 @@ Route::middleware(['auth:sanctum', 'ability:Client'])->group(function () {
 /* --- Routes Admin and Client --- */
 Route::middleware(['auth:sanctum', 'ability:Admin,Client'])->group(function () {
     Route::get('aboutUs', [\App\Http\Controllers\AboutUsController::class, 'index']);
+
+    Route::get('download', [\App\Http\Controllers\InfoSectorialController::class, 'download']);
 
     Route::get('faq', [\App\Http\Controllers\FaqController::class, 'index']);
     Route::get('faq/{faq}', [\App\Http\Controllers\FaqController::class, 'show']);
