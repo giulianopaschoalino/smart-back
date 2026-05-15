@@ -22,6 +22,8 @@ use App\Repositories\Users\UserContractInterface;
 use App\Repositories\Users\UserRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
+use App\Models\PersonalAccessToken as AppPersonalAccessToken;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -81,5 +83,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         setlocale(LC_TIME,  config('app.locale'), 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+        // Use our app model for personal access tokens so we can soft-delete tokens.
+        Sanctum::usePersonalAccessTokenModel(AppPersonalAccessToken::class);
     }
 }
